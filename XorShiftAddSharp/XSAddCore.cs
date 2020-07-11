@@ -471,7 +471,18 @@ namespace XorShiftAddSharp
             return scr.Length;
         }
 
-        static uint strtoul(ReadOnlySpan<char> scr, int idx) => uint.Parse(scr.Slice(idx), NumberStyles.HexNumber);
+        static uint strtoul(ReadOnlySpan<char> scr, int idx)
+        {
+            var end = 0;
+
+            for (; end < scr.Length; ++end)
+                if (scr[end] == '\0')
+                    break;
+
+
+
+            return uint.Parse(scr[idx..end], NumberStyles.HexNumber);
+        }
 
         static void sprintf(Span<char> buffer, int idx,string format, uint value)
         {
@@ -481,14 +492,14 @@ namespace XorShiftAddSharp
 
             foreach (var elem in tmp)
             {
-                buffer[++piv] = elem;
+                buffer[piv++] = elem;
             }
             
         }
 
         static void strtopolynomial(Span<uint> poly, ReadOnlySpan<char> str)
         {
-          
+
 
             Span<char> buffer = stackalloc char[POLYNOMIAL_ARRAY_SIZE * 8 + 1];
             //strncpy(buffer, str, POLYNOMIAL_ARRAY_SIZE* 8);
@@ -500,18 +511,21 @@ namespace XorShiftAddSharp
 
             int pos = len - 8;
             int i;
-            for (i = 0; pos >= 0 && i<POLYNOMIAL_ARRAY_SIZE; i++)
+            for (i = 0; pos >= 0 && i < POLYNOMIAL_ARRAY_SIZE; i++)
             {
                 poly[i] = strtoul(buffer, pos);
                 buffer[pos] = (char) 0;
                 pos -= 8;
             }
+
             if (pos + 8 > 0)
             {
                 poly[i] = strtoul(buffer, 0);
                 i++;
             }
-            for (; i<POLYNOMIAL_ARRAY_SIZE; i++) {
+
+            for (; i < POLYNOMIAL_ARRAY_SIZE; i++)
+            {
                 poly[i] = 0;
             }
         }
@@ -533,7 +547,7 @@ namespace XorShiftAddSharp
                 }
                 else
                 {
-                    sprintf(str , pos, "%08x", poly[i]);
+                    sprintf(str , pos, "x08", poly[i]);
                     pos = strlen(str);
                 }
             }

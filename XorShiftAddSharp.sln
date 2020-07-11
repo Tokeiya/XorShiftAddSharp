@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XorShiftAddSharp", "XorShiftAddSharp\XorShiftAddSharp.csproj", "{D62DB8EC-0B4F-438E-8420-2948DC1062B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XorShiftAddSharp", "XorShiftAddSharp\XorShiftAddSharp.csproj", "{D62DB8EC-0B4F-438E-8420-2948DC1062B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBench", "TestBench\TestBench.csproj", "{1AD7EC09-49C0-43E7-A26F-ECFF8D67B346}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D62DB8EC-0B4F-438E-8420-2948DC1062B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D62DB8EC-0B4F-438E-8420-2948DC1062B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D62DB8EC-0B4F-438E-8420-2948DC1062B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AD7EC09-49C0-43E7-A26F-ECFF8D67B346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AD7EC09-49C0-43E7-A26F-ECFF8D67B346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AD7EC09-49C0-43E7-A26F-ECFF8D67B346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AD7EC09-49C0-43E7-A26F-ECFF8D67B346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
