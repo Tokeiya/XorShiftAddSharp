@@ -21,9 +21,15 @@ namespace TestBench
         {
             Span<char> buff = stackalloc char[33];
 
-            XorShiftAddSharp.XSAddCore.xsadd_calculate_jump_polynomial(buff,10,"42");
-
+            //(2771179739, "e700ac6c84f58579", "1671ade5bd6e8b5043b2c658b18e87de")
+            XorShiftAddSharp.XSAddCore.xsadd_calculate_jump_polynomial(buff, 2771179739, "e700ac6c84f58579");
             Dump(buff);
+
+            for (int i = 0; i < buff.Length; i++) buff[i] = '\0';
+
+            XorShiftAddSharp.XSAddCore.xsadd_calculate_jump_polynomial(buff, 2771179739, "e700ac6c84f58579");
+            Dump(buff);
+
         }
     }
 }

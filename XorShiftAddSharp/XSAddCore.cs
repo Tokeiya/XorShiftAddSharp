@@ -24,9 +24,6 @@ namespace XorShiftAddSharp
         public const int POLYNOMIAL_ARRAY_SIZE = 8;
         public const int UZ_ARRAY_SIZE = 8;
 
-        private static uint[] CreateF2_POLYNOMIAL_T() => new uint[POLYNOMIAL_ARRAY_SIZE];
-        private static ushort[] CreateUZ_T() => new ushort[UZ_ARRAY_SIZE];
-
 
         /*
          * this is hexadecimal string
@@ -78,7 +75,7 @@ namespace XorShiftAddSharp
             return a * XSADD_DOUBLE_MUL;
         }
 
-        static void xsadd_init(uint[] xsadd, uint seed)
+        public static void xsadd_init(uint[] xsadd, uint seed)
         {
             xsadd[0] = seed;
             xsadd[1] = 0;
@@ -97,7 +94,7 @@ namespace XorShiftAddSharp
             }
         }
 
-        public static void xsadd_init_by_array(uint[] random, uint[] init_key, uint key_length)
+        public static void xsadd_init_by_array(uint[] random, uint[] init_key, int key_length)
         {
             const int lag = 1;
             const int mid = 1;
@@ -113,7 +110,7 @@ namespace XorShiftAddSharp
             st[3] = 0;
             if (key_length + 1 > LOOP)
             {
-                count = key_length + 1;
+                count = (uint)key_length + 1;
             }
             else
             {
@@ -123,7 +120,7 @@ namespace XorShiftAddSharp
             r = ini_func1(st[0] ^ st[mid % size]
                                 ^ st[(size - 1) % size]);
             st[mid % size] += r;
-            r += key_length;
+            r += (uint)key_length;
             st[(mid + lag) % size] += r;
             st[0] = r;
             count--;
@@ -213,6 +210,8 @@ namespace XorShiftAddSharp
         public static void xsadd_calculate_jump_polynomial(Span<char> jump_str,
             uint mul_step, string base_step)
         {
+            for (var i = 0; i < jump_str.Length; ++i) jump_str[i] = '\0';
+
             Span<uint> jump_poly = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
             Span<uint> charcteristic = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
             Span<uint> tee = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
