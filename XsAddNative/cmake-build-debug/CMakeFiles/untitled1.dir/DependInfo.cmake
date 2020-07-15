@@ -5,7 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/mnt/i/untitled1/xsadd.c" "/mnt/i/untitled1/cmake-build-debug/CMakeFiles/untitled1.dir/xsadd.c.o"
+  "/mnt/g/XorShiftAddSharp/XsAddNative/xsadd.c" "/mnt/g/XorShiftAddSharp/XsAddNative/cmake-build-debug/CMakeFiles/untitled1.dir/xsadd.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
@@ -13,7 +13,7 @@ set(CMAKE_C_COMPILER_ID "GNU")
 set(CMAKE_C_TARGET_INCLUDE_PATH
   )
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/mnt/i/untitled1/main.cpp" "/mnt/i/untitled1/cmake-build-debug/CMakeFiles/untitled1.dir/main.cpp.o"
+  "/mnt/g/XorShiftAddSharp/XsAddNative/main.cpp" "/mnt/g/XorShiftAddSharp/XsAddNative/cmake-build-debug/CMakeFiles/untitled1.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

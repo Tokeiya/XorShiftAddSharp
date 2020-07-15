@@ -170,7 +170,7 @@ namespace XorShiftAddSharp
         public static void xsadd_jump(uint[] xsadd, uint mul_step, string base_step)
         {
             Span<char> jump_str = stackalloc char[33];
-            xsadd_calculate_jump_polynomial(jump_str, mul_step, base_step);
+            xsadd_calculate_jump_polynomial(jump_str, mul_step, base_step.Replace("0x", ""));
             xsadd_jump_by_polynomial(xsadd, jump_str);
         }
 

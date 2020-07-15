@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace XorShiftAddSharpTest
 {
-    public class CalcJumpPolyTest
+    public class JumpTest
     {
         public static IReadOnlyList<(uint mulStep, string baseStep, string expected)> TestSamples =
             new (uint mulStep, string baseStep, string expected)[]
@@ -34,9 +34,19 @@ namespace XorShiftAddSharpTest
                 (2017911385, "41e2136e8bc642ca", "84494f106a52405eb85b0a732e529987"),
             };
 
+        public static IReadOnlyList<(uint seed, uint mulStep, string baseStep, uint[] expected)> ParameterizedJumpSample =
+            new (uint seed, uint mulStep, string baseStep, uint[] expected)[]
+
+            {
+                (42, 4, "0x40000000", new[] {1487782329u, 2431386006u, 46422321u, 1262793750u,}),
+                (42, 1073741824, "4", new[] {1487782329u, 2431386006u, 46422321u, 1262793750u,}),
+                (114514, 4294967295, "100000000", new[] {1989539249u, 167743719u, 2445625427u, 1312310908u,}),
+                (114514, 4294967295, "0x100000000", new[] {1989539249u, 167743719u, 2445625427u, 1312310908u,})
+            };
+
         private readonly ITestOutputHelper _output;
 
-        public CalcJumpPolyTest(ITestOutputHelper output) => _output = output;
+        public JumpTest(ITestOutputHelper output) => _output = output;
 
         [Fact]
         public void CalcTest()
@@ -55,6 +65,31 @@ namespace XorShiftAddSharpTest
             {
                 XSAddCore.xsadd_calculate_jump_polynomial(buff, sample.mulStep, sample.baseStep);
                 assert(buff, sample.expected);
+            }
+        }
+
+        [Fact]
+        public void ParameterizedJumpTest()
+        {
+            static void assert(ReadOnlySpan<uint> expected, ReadOnlySpan<uint> actual)
+            {
+                actual.Length.Is(4);
+                expected.Length.Is(4);
+
+                for (int i = 0; i < expected.Length; i++)
+                {
+                    expected[i].Is(actual[i]);
+                }
+            }
+
+            var actual = new uint[4];
+
+            foreach (var elem in ParameterizedJumpSample)
+            {
+                XSAddCore.xsadd_init(actual, elem.seed);
+                XSAddCore.xsadd_jump(actual, elem.mulStep, elem.baseStep);
+
+                assert(elem.expected, actual);
             }
         }
 

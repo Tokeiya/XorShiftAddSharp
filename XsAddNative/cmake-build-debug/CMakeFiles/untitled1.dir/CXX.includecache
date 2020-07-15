@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/mnt/i/untitled1/main.cpp
+/mnt/g/XorShiftAddSharp/XsAddNative/main.cpp
 iostream
 -
 array
@@ -16,11 +16,13 @@ vector
 memory
 -
 xsadd.h
-/mnt/i/untitled1/xsadd.h
+/mnt/g/XorShiftAddSharp/XsAddNative/xsadd.h
 iomanip
 -
+string_view
+-
 
-/mnt/i/untitled1/xsadd.h
+/mnt/g/XorShiftAddSharp/XsAddNative/xsadd.h
 stdint.h
 -
 inttypes.h
