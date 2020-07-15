@@ -29,7 +29,7 @@ namespace XorShiftAddSharp
         /* 3^41 > 2^64 and 3^41 < 2^65 */
         private const string XsaddJumpBaseStep = "1FA2A1CF67B5FB863";
 
-        public static void NextState(uint[] xsadd)
+        public static void NextState(Span<uint> xsadd)
         {
             const int sh1 = 15;
             const int sh2 = 18;
@@ -46,25 +46,25 @@ namespace XorShiftAddSharp
             xsadd[3] = t;
         }
 
-        public static uint NextUint32(uint[] xsadd)
+        public static uint NextUint32(Span<uint> xsadd)
         {
             NextState(xsadd);
             return xsadd[3] + xsadd[2];
         }
 
-        public static float NextFloat(uint[] xsadd)
+        public static float NextFloat(Span<uint> xsadd)
         {
             return (NextUint32(xsadd) >> 8) * XsaddFloatMul;
         }
 
         // ReSharper disable once InconsistentNaming
-        public static float XsAddFloatOC(uint[] xsadd)
+        public static float XsAddFloatOC(Span<uint> xsadd)
         {
             NextState(xsadd);
             return 1.0f - NextFloat(xsadd);
         }
 
-        public static double NextDouble(uint[] xsadd)
+        public static double NextDouble(Span<uint> xsadd)
         {
             ulong a = NextUint32(xsadd);
             ulong b = NextUint32(xsadd);
@@ -72,7 +72,7 @@ namespace XorShiftAddSharp
             return a * XsaddDoubleMul;
         }
 
-        public static void Init(uint[] xsadd, uint seed)
+        public static void Init(Span<uint> xsadd, uint seed)
         {
             xsadd[0] = seed;
             xsadd[1] = 0;
@@ -81,30 +81,30 @@ namespace XorShiftAddSharp
 
             for (uint i = 1; i < Loop; i++)
             {
-                xsadd[i & 3] ^= i + 1812433253u * (xsadd[(i - 1) & 3] ^ (xsadd[(i - 1) & 3] >> 30));
+                xsadd[(int)i & 3] ^= i + 1812433253u * (xsadd[(int)(i - 1) & 3] ^ (xsadd[(int)(i - 1) & 3] >> 30));
             }
 
-            period_certification(xsadd);
+            PeriodCertification(xsadd);
             for (int i = 0; i < Loop; i++)
             {
                 NextState(xsadd);
             }
         }
 
-        public static void Init(uint[] random, uint[] initKey, int keyLength)
+        public static void Init(Span<uint> random, ReadOnlySpan<uint> initKey, int keyLength)
         {
             const int lag = 1;
             const int mid = 1;
             const int size = 4;
-            uint i, j;
+            int i, j;
             uint count;
             uint r;
-            uint[] st = random;
-
-            st[0] = 0;
-            st[1] = 0;
-            st[2] = 0;
-            st[3] = 0;
+            //uint[] st = random;
+            
+            random[0] = 0;
+            random[1] = 0;
+            random[2] = 0;
+            random[3] = 0;
             if (keyLength + 1 > Loop)
             {
                 count = (uint)keyLength + 1;
@@ -114,64 +114,64 @@ namespace XorShiftAddSharp
                 count = Loop;
             }
 
-            r = IniFunc1(st[0] ^ st[mid % size]
-                                ^ st[(size - 1) % size]);
-            st[mid % size] += r;
+            r = IniFunc1(random[0] ^ random[mid % size]
+                                ^ random[(size - 1) % size]);
+            random[mid % size] += r;
             r += (uint)keyLength;
-            st[(mid + lag) % size] += r;
-            st[0] = r;
+            random[(mid + lag) % size] += r;
+            random[0] = r;
             count--;
             for (i = 1, j = 0; (j < count) && (j < keyLength); j++)
             {
-                r = IniFunc1(st[i % size]
-                              ^ st[(i + mid) % size]
-                              ^ st[(i + size - 1) % size]);
-                st[(i + mid) % size] += r;
-                r += initKey[j] + i;
-                st[(i + mid + lag) % size] += r;
-                st[i % size] = r;
+                r = IniFunc1(random[i % size]
+                              ^ random[(i + mid) % size]
+                              ^ random[(i + size - 1) % size]);
+                random[(i + mid) % size] += r;
+                r += initKey[j] + (uint) i;
+                random[(i + mid + lag) % size] += r;
+                random[i % size] = r;
                 i = (i + 1) % size;
             }
 
             for (; j < count; j++)
             {
-                r = IniFunc1(st[i % size]
-                              ^ st[(i + mid) % size]
-                              ^ st[(i + size - 1) % size]);
-                st[(i + mid) % size] += r;
-                r += i;
-                st[(i + mid + lag) % size] += r;
-                st[i % size] = r;
+                r = IniFunc1(random[i % size]
+                              ^ random[(i + mid) % size]
+                              ^ random[(i + size - 1) % size]);
+                random[(i + mid) % size] += r;
+                r += (uint)i;
+                random[(i + mid + lag) % size] += r;
+                random[i % size] = r;
                 i = (i + 1) % size;
             }
 
             for (j = 0; j < size; j++)
             {
-                r = IniFunc2(st[i % size]
-                              + st[(i + mid) % size]
-                              + st[(i + size - 1) % size]);
-                st[(i + mid) % size] ^= r;
-                r -= i;
-                st[(i + mid + lag) % size] ^= r;
-                st[i % size] = r;
+                r = IniFunc2(random[i % size]
+                              + random[(i + mid) % size]
+                              + random[(i + size - 1) % size]);
+                random[(i + mid) % size] ^= r;
+                r -= (uint)i;
+                random[(i + mid + lag) % size] ^= r;
+                random[i % size] = r;
                 i = (i + 1) % size;
             }
 
-            period_certification(random);
+            PeriodCertification(random);
             for (i = 0; i < Loop; i++)
             {
                 NextState(random);
             }
         }
 
-        public static void Jump(uint[] xsadd, uint mulStep, string baseStep)
+        public static void Jump(Span<uint> xsadd, uint mulStep, string baseStep)
         {
             Span<char> jumpStr = stackalloc char[33];
             CalculateJumpPolynomial(jumpStr, mulStep, baseStep.Replace("0x", ""));
             Jump(xsadd, jumpStr);
         }
 
-        public static void Jump(uint[] xsadd, ReadOnlySpan<char> jumpStr)
+        public static void Jump(Span<uint> xsadd, ReadOnlySpan<char> jumpStr)
         {
 
             Span<uint> jumpPoly = stackalloc uint[PolynomialArraySize];
@@ -237,7 +237,7 @@ namespace XorShiftAddSharp
             dest[3] ^= src[3];
         }
 
-        static void period_certification(uint[] xsadd)
+        private static void PeriodCertification(Span<uint> xsadd)
         {
             if (xsadd[0] == 0 &&
                 xsadd[1] == 0 &&
