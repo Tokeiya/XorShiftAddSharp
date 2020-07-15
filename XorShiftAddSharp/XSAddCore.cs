@@ -91,7 +91,7 @@ namespace XorShiftAddSharp
             }
         }
 
-        public static void Init(Span<uint> random, ReadOnlySpan<uint> initKey, int keyLength)
+        public static void Init(Span<uint> random, ReadOnlySpan<uint> initKey)
         {
             const int lag = 1;
             const int mid = 1;
@@ -105,9 +105,9 @@ namespace XorShiftAddSharp
             random[1] = 0;
             random[2] = 0;
             random[3] = 0;
-            if (keyLength + 1 > Loop)
+            if (initKey.Length + 1 > Loop)
             {
-                count = (uint)keyLength + 1;
+                count = (uint)initKey.Length + 1;
             }
             else
             {
@@ -117,11 +117,11 @@ namespace XorShiftAddSharp
             r = IniFunc1(random[0] ^ random[mid % size]
                                 ^ random[(size - 1) % size]);
             random[mid % size] += r;
-            r += (uint)keyLength;
+            r += (uint)initKey.Length;
             random[(mid + lag) % size] += r;
             random[0] = r;
             count--;
-            for (i = 1, j = 0; (j < count) && (j < keyLength); j++)
+            for (i = 1, j = 0; (j < count) && (j < initKey.Length); j++)
             {
                 r = IniFunc1(random[i % size]
                               ^ random[(i + mid) % size]
