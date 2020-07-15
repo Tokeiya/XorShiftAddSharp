@@ -81,10 +81,11 @@ namespace XorShiftAddSharpTest
             foreach (var elem in ArrayInit)
             {
                 XSAddCore.xsadd_init_by_array(actual, elem.input, elem.input.Length);
-
                 Assert(actual, elem.expectedState);
             }
         }
+
+
 
     }
 }

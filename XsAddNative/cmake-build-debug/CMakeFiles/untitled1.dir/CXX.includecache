@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/i/untitled1/main.cpp
+iostream
+-
+array
+-
+vector
+-
+memory
+-
+xsadd.h
+/mnt/i/untitled1/xsadd.h
+iomanip
+-
+
+/mnt/i/untitled1/xsadd.h
+stdint.h
+-
+inttypes.h
+-
+

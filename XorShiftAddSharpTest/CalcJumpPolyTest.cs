@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using ChainingAssertion;
 using XorShiftAddSharp;
-using XorShiftAddSharpTest.ExpectedSamples;
 using Xunit;
 using Xunit.Abstractions;
 

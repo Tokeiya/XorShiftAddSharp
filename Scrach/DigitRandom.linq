@@ -7,6 +7,8 @@
 
 public class DigitRandom:IDisposable
 {
+	const long mask = uint.MaxValue >> 12;
+
 	private const int BufferSize=640;
 
 	private static readonly (uint limit, uint threshold, uint mask)[] Mask ={
@@ -30,7 +32,10 @@ public class DigitRandom:IDisposable
 		_rnd=new SfmtPrimitiveState();
 		SfmtPrimitive.InitGenRand(_rnd,seed);
 		_buffer=new AlignedArray<uint>(BufferSize,16);
-		Fill();
+		
+		var cnt=DateTimeOffset.Now.Ticks&mask;
+		
+		for(var i=0;i<cnt;i++)	Fill();
 	}
 	
 	private void Fill()
@@ -45,7 +50,7 @@ public class DigitRandom:IDisposable
 		return _buffer[_cursor++];
 	}
 	
-	public uint Next(uint digit)
+	public uint Next(int digit)
 	{
 		var mask=Mask[digit-1];
 		
