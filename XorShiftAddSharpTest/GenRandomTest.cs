@@ -291,11 +291,11 @@ namespace XorShiftAddSharpTest
             static void assert(uint seed, ReadOnlySpan<uint> expected)
             {
                 var state = new uint[4];
-                XSAddCore.Init(state, seed);
+                XsAddCore.Init(state, seed);
 
                 foreach (var elem in expected)
                 {
-                    XSAddCore.NextUint32(state).Is(elem);
+                    XsAddCore.NextUint32(state).Is(elem);
                 }
             }
 
@@ -311,11 +311,11 @@ namespace XorShiftAddSharpTest
             static void assert(uint seed, ReadOnlySpan<double> expected)
             {
                 var state = new uint[4];
-                XSAddCore.Init(state, seed);
+                XsAddCore.Init(state, seed);
 
                 foreach (var elem in expected)
                 {
-                    XSAddCore.NextDouble(state).Is(elem);
+                    XsAddCore.NextDouble(state).Is(elem);
                 }
             }
 
@@ -331,11 +331,11 @@ namespace XorShiftAddSharpTest
             static void assert(uint seed, ReadOnlySpan<float> expected)
             {
                 var state = new uint[4];
-                XSAddCore.Init(state, seed);
+                XsAddCore.Init(state, seed);
 
                 foreach (var elem in expected)
                 {
-                    XSAddCore.NextFloat(state).Is(elem);
+                    XsAddCore.NextFloat(state).Is(elem);
                 }
             }
 
@@ -351,11 +351,11 @@ namespace XorShiftAddSharpTest
             static void assert(uint seed, ReadOnlySpan<float> expected)
             {
                 var state = new uint[4];
-                XSAddCore.Init(state, seed);
+                XsAddCore.Init(state, seed);
 
                 foreach (var elem in expected)
                 {
-                    XSAddCore.XsAddFloatOC(state).Is(elem);
+                    XsAddCore.XsAddFloatOC(state).Is(elem);
                 }
             }
 

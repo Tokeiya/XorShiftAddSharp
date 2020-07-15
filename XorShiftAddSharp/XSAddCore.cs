@@ -10,7 +10,7 @@ namespace XorShiftAddSharp
  */
 
 
-    public static class XSAddCore
+    public static class XsAddCore
     {
         public const float XsaddFloatMul = (1.0f / 16777216.0f);
         public const double XsaddDoubleMul = (1.0 / 9007199254740992.0);
@@ -57,6 +57,7 @@ namespace XorShiftAddSharp
             return (NextUint32(xsadd) >> 8) * XsaddFloatMul;
         }
 
+        // ReSharper disable once InconsistentNaming
         public static float XsAddFloatOC(uint[] xsadd)
         {
             NextState(xsadd);
@@ -90,7 +91,7 @@ namespace XorShiftAddSharp
             }
         }
 
-        public static void Init(uint[] random, uint[] init_key, int key_length)
+        public static void Init(uint[] random, uint[] initKey, int keyLength)
         {
             const int lag = 1;
             const int mid = 1;
@@ -104,9 +105,9 @@ namespace XorShiftAddSharp
             st[1] = 0;
             st[2] = 0;
             st[3] = 0;
-            if (key_length + 1 > Loop)
+            if (keyLength + 1 > Loop)
             {
-                count = (uint)key_length + 1;
+                count = (uint)keyLength + 1;
             }
             else
             {
@@ -116,17 +117,17 @@ namespace XorShiftAddSharp
             r = IniFunc1(st[0] ^ st[mid % size]
                                 ^ st[(size - 1) % size]);
             st[mid % size] += r;
-            r += (uint)key_length;
+            r += (uint)keyLength;
             st[(mid + lag) % size] += r;
             st[0] = r;
             count--;
-            for (i = 1, j = 0; (j < count) && (j < key_length); j++)
+            for (i = 1, j = 0; (j < count) && (j < keyLength); j++)
             {
                 r = IniFunc1(st[i % size]
                               ^ st[(i + mid) % size]
                               ^ st[(i + size - 1) % size]);
                 st[(i + mid) % size] += r;
-                r += init_key[j] + i;
+                r += initKey[j] + i;
                 st[(i + mid + lag) % size] += r;
                 st[i % size] = r;
                 i = (i + 1) % size;
@@ -163,17 +164,17 @@ namespace XorShiftAddSharp
             }
         }
 
-        public static void Jump(uint[] xsadd, uint mul_step, string base_step)
+        public static void Jump(uint[] xsadd, uint mulStep, string baseStep)
         {
-            Span<char> jump_str = stackalloc char[33];
-            CalculateJumpPolynomial(jump_str, mul_step, base_step.Replace("0x", ""));
-            Jump(xsadd, jump_str);
+            Span<char> jumpStr = stackalloc char[33];
+            CalculateJumpPolynomial(jumpStr, mulStep, baseStep.Replace("0x", ""));
+            Jump(xsadd, jumpStr);
         }
 
-        public static void Jump(uint[] xsadd, ReadOnlySpan<char> jump_str)
+        public static void Jump(uint[] xsadd, ReadOnlySpan<char> jumpStr)
         {
 
-            Span<uint> jump_poly = stackalloc uint[PolynomialArraySize];
+            Span<uint> jumpPoly = stackalloc uint[PolynomialArraySize];
             Span<uint> work = stackalloc uint[4];
 
             for (var i = 0; i < work.Length; i++)
@@ -181,7 +182,7 @@ namespace XorShiftAddSharp
                 work[i] = 0;
             }
 
-            StrToPolynomial(jump_poly, jump_str);
+            StrToPolynomial(jumpPoly, jumpStr);
 
             for (int i = 0; i < PolynomialArraySize; ++i)
             {
@@ -189,7 +190,7 @@ namespace XorShiftAddSharp
                 {
                     uint mask = 1u << j;
 
-                    if ((jump_poly[i] & mask) != 0)
+                    if ((jumpPoly[i] & mask) != 0)
                     {
                         xsadd_add(work, xsadd);
                     }
@@ -203,12 +204,12 @@ namespace XorShiftAddSharp
 
 
         //char[] jump_star is must.
-        public static void CalculateJumpPolynomial(Span<char> jump_str,
-            uint mul_step, string base_step)
+        public static void CalculateJumpPolynomial(Span<char> jumpStr,
+            uint mulStep, string baseStep)
         {
-            for (var i = 0; i < jump_str.Length; ++i) jump_str[i] = '\0';
+            for (var i = 0; i < jumpStr.Length; ++i) jumpStr[i] = '\0';
 
-            Span<uint> jump_poly = stackalloc uint[PolynomialArraySize];
+            Span<uint> jumpPoly = stackalloc uint[PolynomialArraySize];
             Span<uint> charcteristic = stackalloc uint[PolynomialArraySize];
             Span<uint> tee = stackalloc uint[PolynomialArraySize];
 
@@ -221,11 +222,11 @@ namespace XorShiftAddSharp
 
             tee[0] = 2;
 
-            String16ToUz(@base, base_step);
-            Uint32ToUz(mul, mul_step);
+            String16ToUz(@base, baseStep);
+            Uint32ToUz(mul, mulStep);
             UzMul(step, mul, @base);
-            PolynomialPowerMod(jump_poly, tee, step, charcteristic);
-            PolynomialToStr(jump_str, jump_poly);
+            PolynomialPowerMod(jumpPoly, tee, step, charcteristic);
+            PolynomialToStr(jumpStr, jumpPoly);
         }
 
         static void xsadd_add(Span<uint> dest, Span<uint> src)
@@ -278,6 +279,7 @@ namespace XorShiftAddSharp
             }
         }
 
+        // ReSharper disable once InconsistentNaming
         static void ShiftUp0n(Span<uint> dest, int n)
         {
             uint lsb = 0;
@@ -343,20 +345,20 @@ namespace XorShiftAddSharp
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static int DegLazy(ReadOnlySpan<uint> x, int pre_deg)
+        static int DegLazy(ReadOnlySpan<uint> x, int preDeg)
         {
-            int deg = pre_deg;
+            int deg = preDeg;
             uint mask;
-            int index = pre_deg / 32;
-            int bit_pos = pre_deg % 32;
+            int index = preDeg / 32;
+            int bitPos = preDeg % 32;
             if (index >= PolynomialArraySize)
             {
                 index = PolynomialArraySize - 1;
-                bit_pos = 31;
+                bitPos = 31;
                 deg = (index + 1) * 32 - 1;
             }
 
-            mask = 1u << bit_pos;
+            mask = 1u << bitPos;
             for (int i = index; i >= 0; i--)
             {
                 while (mask != 0)
@@ -423,9 +425,9 @@ namespace XorShiftAddSharp
             Span<uint> tmp = stackalloc uint[PolynomialArraySize];
 
             int degree = Deg(x);
-            int dest_deg = Deg(dest);
-            int diff = dest_deg - degree;
-            int tmp_deg = degree;
+            int destDeg = Deg(dest);
+            int diff = destDeg - degree;
+            int tmpDeg = degree;
             if (diff < 0)
             {
                 return;
@@ -441,17 +443,17 @@ namespace XorShiftAddSharp
             }
 
             ShiftUp(tmp, diff);
-            tmp_deg += diff;
+            tmpDeg += diff;
             Add(dest, tmp);
-            dest_deg = DegLazy(dest, dest_deg);
-            while (dest_deg >= degree)
+            destDeg = DegLazy(dest, destDeg);
+            while (destDeg >= degree)
             {
                 ShiftDown1(tmp);
-                tmp_deg--;
-                if (dest_deg == tmp_deg)
+                tmpDeg--;
+                if (destDeg == tmpDeg)
                 {
                     Add(dest, tmp);
-                    dest_deg = DegLazy(dest, dest_deg);
+                    destDeg = DegLazy(dest, destDeg);
                 }
             }
         }
@@ -466,6 +468,7 @@ namespace XorShiftAddSharp
             return scr.Length;
         }
 
+        // ReSharper disable once InconsistentNaming
         static uint StrToUL(ReadOnlySpan<char> scr, int idx)
         {
             var end = 0;
@@ -558,7 +561,7 @@ namespace XorShiftAddSharp
         static void PolynomialPowerMod(Span<uint> dest,
         ReadOnlySpan<uint> x,
             Span<ushort> power,
-        ReadOnlySpan<uint> mod_poly)
+        ReadOnlySpan<uint> modPoly)
         {
             Span<uint> tmp = stackalloc uint[PolynomialArraySize];
             Span<uint> result = stackalloc uint[PolynomialArraySize];
@@ -570,17 +573,17 @@ namespace XorShiftAddSharp
 
             for (int i = 0; i < PolynomialArraySize; i++)
             {
-                ushort tmp_power = power[i];
+                ushort tmpPower = power[i];
                 for (int j = 0; j < 16; j++)
                 {
-                    if ((tmp_power & 1) != 0)
+                    if ((tmpPower & 1) != 0)
                     {
                         Mul(result, tmp);
-                        Mod(result, mod_poly);
+                        Mod(result, modPoly);
                     }
                     Square(tmp);
-                    Mod(tmp, mod_poly);
-                    tmp_power = (ushort)(tmp_power >> 1);
+                    Mod(tmp, modPoly);
+                    tmpPower = (ushort)(tmpPower >> 1);
                 }
             }
 
@@ -605,7 +608,7 @@ namespace XorShiftAddSharp
         static void UzMul(Span<ushort> result, ReadOnlySpan<ushort> x, ReadOnlySpan<ushort> y)
         {
             uint tmp;
-            const uint lmask = 0xffffU;
+            const uint lMask = 0xffffU;
 
             UzClear(result);
             for (int i = 0; i < UzArraySize; i++)
@@ -618,7 +621,7 @@ namespace XorShiftAddSharp
                         break;
                     }
                     tmp += result[i + j];
-                    result[i + j] = (ushort)(tmp & lmask);
+                    result[i + j] = (ushort)(tmp & lMask);
                     for (int k = i + j + 1; k < UzArraySize; k++)
                     {
                         tmp = tmp >> 16;
@@ -627,7 +630,7 @@ namespace XorShiftAddSharp
                             break;
                         }
                         tmp += result[k];
-                        result[k] = (ushort)(tmp & lmask);
+                        result[k] = (ushort)(tmp & lMask);
                     }
                 }
             }
