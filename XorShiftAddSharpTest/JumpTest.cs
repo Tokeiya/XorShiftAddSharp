@@ -63,7 +63,7 @@ namespace XorShiftAddSharpTest
 
             foreach (var sample in TestSamples)
             {
-                XSAddCore.xsadd_calculate_jump_polynomial(buff, sample.mulStep, sample.baseStep);
+                XSAddCore.CalculateJumpPolynomial(buff, sample.mulStep, sample.baseStep);
                 assert(buff, sample.expected);
             }
         }
@@ -86,8 +86,8 @@ namespace XorShiftAddSharpTest
 
             foreach (var elem in ParameterizedJumpSample)
             {
-                XSAddCore.xsadd_init(actual, elem.seed);
-                XSAddCore.xsadd_jump(actual, elem.mulStep, elem.baseStep);
+                XSAddCore.Init(actual, elem.seed);
+                XSAddCore.Jump(actual, elem.mulStep, elem.baseStep);
 
                 assert(elem.expected, actual);
             }

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Buffers;
-using System.ComponentModel.Design;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using System.Text.Unicode;
-using System.Threading.Tasks.Sources;
 
 namespace XorShiftAddSharp
 {
@@ -16,24 +12,24 @@ namespace XorShiftAddSharp
 
     public static class XSAddCore
     {
-        public const float XSADD_FLOAT_MUL = (1.0f / 16777216.0f);
-        public const double XSADD_DOUBLE_MUL = (1.0 / 9007199254740992.0);
+        public const float XsaddFloatMul = (1.0f / 16777216.0f);
+        public const double XsaddDoubleMul = (1.0 / 9007199254740992.0);
 
 
-        public const int LOOP = 8;
-        public const int POLYNOMIAL_ARRAY_SIZE = 8;
-        public const int UZ_ARRAY_SIZE = 8;
+        public const int Loop = 8;
+        public const int PolynomialArraySize = 8;
+        public const int UzArraySize = 8;
 
 
         /*
          * this is hexadecimal string
          */
-        private const string characteristic_polynomial = "100000000008101840085118000000001";
+        private const string CharacteristicPolynomial = "100000000008101840085118000000001";
 
         /* 3^41 > 2^64 and 3^41 < 2^65 */
-        private const string xsadd_jump_base_step = "1FA2A1CF67B5FB863";
+        private const string XsaddJumpBaseStep = "1FA2A1CF67B5FB863";
 
-        public static void xsadd_next_state(uint[] xsadd)
+        public static void NextState(uint[] xsadd)
         {
             const int sh1 = 15;
             const int sh2 = 18;
@@ -50,51 +46,51 @@ namespace XorShiftAddSharp
             xsadd[3] = t;
         }
 
-        public static uint xsadd_uint32(uint[] xsadd)
+        public static uint NextUint32(uint[] xsadd)
         {
-            xsadd_next_state(xsadd);
+            NextState(xsadd);
             return xsadd[3] + xsadd[2];
         }
 
-        public static float xsadd_float(uint[] xsadd)
+        public static float NextFloat(uint[] xsadd)
         {
-            return (xsadd_uint32(xsadd) >> 8) * XSADD_FLOAT_MUL;
+            return (NextUint32(xsadd) >> 8) * XsaddFloatMul;
         }
 
-        public static float xsadd_floatOC(uint[] xsadd)
+        public static float XsAddFloatOC(uint[] xsadd)
         {
-            xsadd_next_state(xsadd);
-            return 1.0f - xsadd_float(xsadd);
+            NextState(xsadd);
+            return 1.0f - NextFloat(xsadd);
         }
 
-        public static double xsadd_double(uint[] xsadd)
+        public static double NextDouble(uint[] xsadd)
         {
-            ulong a = xsadd_uint32(xsadd);
-            ulong b = xsadd_uint32(xsadd);
+            ulong a = NextUint32(xsadd);
+            ulong b = NextUint32(xsadd);
             a = (a << 21) | (b >> 11);
-            return a * XSADD_DOUBLE_MUL;
+            return a * XsaddDoubleMul;
         }
 
-        public static void xsadd_init(uint[] xsadd, uint seed)
+        public static void Init(uint[] xsadd, uint seed)
         {
             xsadd[0] = seed;
             xsadd[1] = 0;
             xsadd[2] = 0;
             xsadd[3] = 0;
 
-            for (uint i = 1; i < LOOP; i++)
+            for (uint i = 1; i < Loop; i++)
             {
                 xsadd[i & 3] ^= i + 1812433253u * (xsadd[(i - 1) & 3] ^ (xsadd[(i - 1) & 3] >> 30));
             }
 
             period_certification(xsadd);
-            for (int i = 0; i < LOOP; i++)
+            for (int i = 0; i < Loop; i++)
             {
-                xsadd_next_state(xsadd);
+                NextState(xsadd);
             }
         }
 
-        public static void xsadd_init_by_array(uint[] random, uint[] init_key, int key_length)
+        public static void Init(uint[] random, uint[] init_key, int key_length)
         {
             const int lag = 1;
             const int mid = 1;
@@ -108,16 +104,16 @@ namespace XorShiftAddSharp
             st[1] = 0;
             st[2] = 0;
             st[3] = 0;
-            if (key_length + 1 > LOOP)
+            if (key_length + 1 > Loop)
             {
                 count = (uint)key_length + 1;
             }
             else
             {
-                count = LOOP;
+                count = Loop;
             }
 
-            r = ini_func1(st[0] ^ st[mid % size]
+            r = IniFunc1(st[0] ^ st[mid % size]
                                 ^ st[(size - 1) % size]);
             st[mid % size] += r;
             r += (uint)key_length;
@@ -126,7 +122,7 @@ namespace XorShiftAddSharp
             count--;
             for (i = 1, j = 0; (j < count) && (j < key_length); j++)
             {
-                r = ini_func1(st[i % size]
+                r = IniFunc1(st[i % size]
                               ^ st[(i + mid) % size]
                               ^ st[(i + size - 1) % size]);
                 st[(i + mid) % size] += r;
@@ -138,7 +134,7 @@ namespace XorShiftAddSharp
 
             for (; j < count; j++)
             {
-                r = ini_func1(st[i % size]
+                r = IniFunc1(st[i % size]
                               ^ st[(i + mid) % size]
                               ^ st[(i + size - 1) % size]);
                 st[(i + mid) % size] += r;
@@ -150,7 +146,7 @@ namespace XorShiftAddSharp
 
             for (j = 0; j < size; j++)
             {
-                r = ini_func2(st[i % size]
+                r = IniFunc2(st[i % size]
                               + st[(i + mid) % size]
                               + st[(i + size - 1) % size]);
                 st[(i + mid) % size] ^= r;
@@ -161,23 +157,23 @@ namespace XorShiftAddSharp
             }
 
             period_certification(random);
-            for (i = 0; i < LOOP; i++)
+            for (i = 0; i < Loop; i++)
             {
-                xsadd_next_state(random);
+                NextState(random);
             }
         }
 
-        public static void xsadd_jump(uint[] xsadd, uint mul_step, string base_step)
+        public static void Jump(uint[] xsadd, uint mul_step, string base_step)
         {
             Span<char> jump_str = stackalloc char[33];
-            xsadd_calculate_jump_polynomial(jump_str, mul_step, base_step.Replace("0x", ""));
-            xsadd_jump_by_polynomial(xsadd, jump_str);
+            CalculateJumpPolynomial(jump_str, mul_step, base_step.Replace("0x", ""));
+            Jump(xsadd, jump_str);
         }
 
-        public static void xsadd_jump_by_polynomial(uint[] xsadd, ReadOnlySpan<char> jump_str)
+        public static void Jump(uint[] xsadd, ReadOnlySpan<char> jump_str)
         {
 
-            Span<uint> jump_poly = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
+            Span<uint> jump_poly = stackalloc uint[PolynomialArraySize];
             Span<uint> work = stackalloc uint[4];
 
             for (var i = 0; i < work.Length; i++)
@@ -185,9 +181,9 @@ namespace XorShiftAddSharp
                 work[i] = 0;
             }
 
-            strtopolynomial(jump_poly, jump_str);
+            StrToPolynomial(jump_poly, jump_str);
 
-            for (int i = 0; i < POLYNOMIAL_ARRAY_SIZE; ++i)
+            for (int i = 0; i < PolynomialArraySize; ++i)
             {
                 for (int j = 0; j < 32; ++j)
                 {
@@ -198,7 +194,7 @@ namespace XorShiftAddSharp
                         xsadd_add(work, xsadd);
                     }
 
-                    xsadd_next_state(xsadd);
+                    NextState(xsadd);
                 }
             }
 
@@ -207,29 +203,29 @@ namespace XorShiftAddSharp
 
 
         //char[] jump_star is must.
-        public static void xsadd_calculate_jump_polynomial(Span<char> jump_str,
+        public static void CalculateJumpPolynomial(Span<char> jump_str,
             uint mul_step, string base_step)
         {
             for (var i = 0; i < jump_str.Length; ++i) jump_str[i] = '\0';
 
-            Span<uint> jump_poly = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
-            Span<uint> charcteristic = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
-            Span<uint> tee = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
+            Span<uint> jump_poly = stackalloc uint[PolynomialArraySize];
+            Span<uint> charcteristic = stackalloc uint[PolynomialArraySize];
+            Span<uint> tee = stackalloc uint[PolynomialArraySize];
 
-            Span<ushort> @base = stackalloc ushort[UZ_ARRAY_SIZE];
-            Span<ushort> mul = stackalloc ushort[UZ_ARRAY_SIZE];
-            Span<ushort> step = stackalloc ushort[UZ_ARRAY_SIZE];
+            Span<ushort> @base = stackalloc ushort[UzArraySize];
+            Span<ushort> mul = stackalloc ushort[UzArraySize];
+            Span<ushort> step = stackalloc ushort[UzArraySize];
 
-            strtopolynomial(charcteristic, characteristic_polynomial);
-            clear(tee);
+            StrToPolynomial(charcteristic, CharacteristicPolynomial);
+            Clear(tee);
 
             tee[0] = 2;
 
-            string16touz(@base, base_step);
-            uint32touz(mul, mul_step);
-            uz_mul(step, mul, @base);
-            polynomial_power_mod(jump_poly, tee, step, charcteristic);
-            polynomialtostr(jump_str, jump_poly);
+            String16ToUz(@base, base_step);
+            Uint32ToUz(mul, mul_step);
+            UzMul(step, mul, @base);
+            PolynomialPowerMod(jump_poly, tee, step, charcteristic);
+            PolynomialToStr(jump_str, jump_poly);
         }
 
         static void xsadd_add(Span<uint> dest, Span<uint> src)
@@ -254,27 +250,27 @@ namespace XorShiftAddSharp
             }
         }
 
-        static void add(Span<uint> dest, ReadOnlySpan<uint> src)
+        static void Add(Span<uint> dest, ReadOnlySpan<uint> src)
         {
-            for (int i = 0; i < POLYNOMIAL_ARRAY_SIZE; i++)
+            for (int i = 0; i < PolynomialArraySize; i++)
             {
                 dest[i] ^= src[i];
             }
         }
 
-        static void clear(Span<uint> dest)
+        static void Clear(Span<uint> dest)
         {
-            for (int i = 0; i < POLYNOMIAL_ARRAY_SIZE; i++)
+            for (int i = 0; i < PolynomialArraySize; i++)
             {
                 dest[i] = 0;
             }
         }
 
-        static void shiftup1(Span<uint> dest)
+        static void ShiftUp1(Span<uint> dest)
         {
             uint lsb = 0;
 
-            for (int i = 0; i < POLYNOMIAL_ARRAY_SIZE; i++)
+            for (int i = 0; i < PolynomialArraySize; i++)
             {
                 uint tmp = dest[i] >> 31;
                 dest[i] = (dest[i] << 1) | lsb;
@@ -282,10 +278,10 @@ namespace XorShiftAddSharp
             }
         }
 
-        static void shiftup0n(Span<uint> dest, int n)
+        static void ShiftUp0n(Span<uint> dest, int n)
         {
             uint lsb = 0;
-            for (int i = 0; i < POLYNOMIAL_ARRAY_SIZE; i++)
+            for (int i = 0; i < PolynomialArraySize; i++)
             {
                 uint tmp = dest[i] >> (32 - n);
                 dest[i] = (dest[i] << n) | lsb;
@@ -293,10 +289,10 @@ namespace XorShiftAddSharp
             }
         }
 
-        static void shiftdown1(Span<uint> dest)
+        static void ShiftDown1(Span<uint> dest)
         {
             uint msb = 0;
-            for (int i = POLYNOMIAL_ARRAY_SIZE - 1; i >= 0; i--)
+            for (int i = PolynomialArraySize - 1; i >= 0; i--)
             {
                 uint tmp = dest[i] << 31;
                 dest[i] = (dest[i] >> 1) | msb;
@@ -304,23 +300,23 @@ namespace XorShiftAddSharp
             }
         }
 
-        static void shiftup(Span<uint> dest, int n)
+        static void ShiftUp(Span<uint> dest, int n)
         {
             int q = n / 32;
             int r = n % 32;
             if (q == 0)
             {
-                shiftup0n(dest, r);
+                ShiftUp0n(dest, r);
                 return;
             }
 
-            if (q >= POLYNOMIAL_ARRAY_SIZE)
+            if (q >= PolynomialArraySize)
             {
-                clear(dest);
+                Clear(dest);
                 return;
             }
 
-            for (int i = POLYNOMIAL_ARRAY_SIZE - 1; i >= q; i--)
+            for (int i = PolynomialArraySize - 1; i >= q; i--)
             {
                 uint lower;
                 if ((r != 0) && (i - q - 1 >= 0))
@@ -341,21 +337,21 @@ namespace XorShiftAddSharp
             }
         }
 
-        static int deg(ReadOnlySpan<uint> x)
+        static int Deg(ReadOnlySpan<uint> x)
         {
-            return deg_lazy(x, POLYNOMIAL_ARRAY_SIZE * 32 - 1);
+            return DegLazy(x, PolynomialArraySize * 32 - 1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static int deg_lazy(ReadOnlySpan<uint> x, int pre_deg)
+        static int DegLazy(ReadOnlySpan<uint> x, int pre_deg)
         {
             int deg = pre_deg;
             uint mask;
             int index = pre_deg / 32;
             int bit_pos = pre_deg % 32;
-            if (index >= POLYNOMIAL_ARRAY_SIZE)
+            if (index >= PolynomialArraySize)
             {
-                index = POLYNOMIAL_ARRAY_SIZE - 1;
+                index = PolynomialArraySize - 1;
                 bit_pos = 31;
                 deg = (index + 1) * 32 - 1;
             }
@@ -374,38 +370,38 @@ namespace XorShiftAddSharp
                     deg--;
                 }
 
-                mask = (uint) (1LU << 31);
+                mask = (uint)(1LU << 31);
             }
 
             return -1;
         }
 
-        static uint ini_func1(uint x)
+        static uint IniFunc1(uint x)
         {
             return (x ^ (x >> 27)) * 1664525u;
         }
 
-        static uint ini_func2(uint x)
+        static uint IniFunc2(uint x)
         {
             return (x ^ (x >> 27)) * 1566083941u;
         }
 
-        static void mul(Span<uint> x, ReadOnlySpan<uint> y)
+        static void Mul(Span<uint> x, ReadOnlySpan<uint> y)
         {
-            Span<uint> result = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
-            clear(result);
+            Span<uint> result = stackalloc uint[PolynomialArraySize];
+            Clear(result);
 
-            for (int i = 0; i < POLYNOMIAL_ARRAY_SIZE; i++)
+            for (int i = 0; i < PolynomialArraySize; i++)
             {
                 uint u = y[i];
                 for (int j = 0; j < 32; j++)
                 {
                     if ((u & 1) != 0)
                     {
-                        add(result, x);
+                        Add(result, x);
                     }
 
-                    shiftup1(x);
+                    ShiftUp1(x);
                     u = u >> 1;
                 }
             }
@@ -414,20 +410,20 @@ namespace XorShiftAddSharp
             result.CopyTo(x);
         }
 
-        static void square(Span<uint> x)
+        static void Square(Span<uint> x)
         {
-            Span<uint> tmp = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
+            Span<uint> tmp = stackalloc uint[PolynomialArraySize];
             x.CopyTo(tmp);
-            mul(x, tmp);
+            Mul(x, tmp);
         }
 
-        static void mod(Span<uint> dest, ReadOnlySpan<uint> x)
+        static void Mod(Span<uint> dest, ReadOnlySpan<uint> x)
         {
 
-            Span<uint> tmp = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
+            Span<uint> tmp = stackalloc uint[PolynomialArraySize];
 
-            int degree = deg(x);
-            int dest_deg = deg(dest);
+            int degree = Deg(x);
+            int dest_deg = Deg(dest);
             int diff = dest_deg - degree;
             int tmp_deg = degree;
             if (diff < 0)
@@ -440,27 +436,27 @@ namespace XorShiftAddSharp
 
             if (diff == 0)
             {
-                add(dest, tmp);
+                Add(dest, tmp);
                 return;
             }
 
-            shiftup(tmp, diff);
+            ShiftUp(tmp, diff);
             tmp_deg += diff;
-            add(dest, tmp);
-            dest_deg = deg_lazy(dest, dest_deg);
+            Add(dest, tmp);
+            dest_deg = DegLazy(dest, dest_deg);
             while (dest_deg >= degree)
             {
-                shiftdown1(tmp);
+                ShiftDown1(tmp);
                 tmp_deg--;
                 if (dest_deg == tmp_deg)
                 {
-                    add(dest, tmp);
-                    dest_deg = deg_lazy(dest, dest_deg);
+                    Add(dest, tmp);
+                    dest_deg = DegLazy(dest, dest_deg);
                 }
             }
         }
 
-        static int strlen(ReadOnlySpan<char> scr)
+        static int StrLen(ReadOnlySpan<char> scr)
         {
             for (int i = 0; i < scr.Length; i++)
             {
@@ -470,7 +466,7 @@ namespace XorShiftAddSharp
             return scr.Length;
         }
 
-        static uint strtoul(ReadOnlySpan<char> scr, int idx)
+        static uint StrToUL(ReadOnlySpan<char> scr, int idx)
         {
             var end = 0;
 
@@ -483,7 +479,7 @@ namespace XorShiftAddSharp
             return uint.Parse(scr[idx..end], NumberStyles.HexNumber);
         }
 
-        static void sprintf(Span<char> buffer, int idx,string format, uint value)
+        static void SprintF(Span<char> buffer, int idx, string format, uint value)
         {
             var tmp = value.ToString(format);
 
@@ -493,95 +489,97 @@ namespace XorShiftAddSharp
             {
                 buffer[piv++] = elem;
             }
-            
+
         }
 
-        static void strtopolynomial(Span<uint> poly, ReadOnlySpan<char> str)
+        static void StrToPolynomial(Span<uint> poly, ReadOnlySpan<char> str)
         {
 
 
-            Span<char> buffer = stackalloc char[POLYNOMIAL_ARRAY_SIZE * 8 + 1];
+            Span<char> buffer = stackalloc char[PolynomialArraySize * 8 + 1];
             //strncpy(buffer, str, POLYNOMIAL_ARRAY_SIZE* 8);
             str.CopyTo(buffer);
 
-            buffer[POLYNOMIAL_ARRAY_SIZE * 8] = '\0';
+            buffer[PolynomialArraySize * 8] = '\0';
 
-            int len = strlen(buffer);
+            int len = StrLen(buffer);
 
             int pos = len - 8;
             int i;
-            for (i = 0; pos >= 0 && i < POLYNOMIAL_ARRAY_SIZE; i++)
+            for (i = 0; pos >= 0 && i < PolynomialArraySize; i++)
             {
-                poly[i] = strtoul(buffer, pos);
-                buffer[pos] = (char) 0;
+                poly[i] = StrToUL(buffer, pos);
+                buffer[pos] = (char)0;
                 pos -= 8;
             }
 
             if (pos + 8 > 0)
             {
-                poly[i] = strtoul(buffer, 0);
+                poly[i] = StrToUL(buffer, 0);
                 i++;
             }
 
-            for (; i < POLYNOMIAL_ARRAY_SIZE; i++)
+            for (; i < PolynomialArraySize; i++)
             {
                 poly[i] = 0;
             }
         }
 
-        static void polynomialtostr(Span<char> str, Span<uint> poly)
+        static void PolynomialToStr(Span<char> str, Span<uint> poly)
         {
             int first = 1;
             int pos = 0;
-            for (int i = POLYNOMIAL_ARRAY_SIZE - 1; i >= 0; i--)
+            for (int i = PolynomialArraySize - 1; i >= 0; i--)
             {
-                if (first!=0)
+                if (first != 0)
                 {
                     if (poly[i] != 0)
                     {
-                        sprintf(str, pos, "x", poly[i]);
-                        pos = strlen(str);
+                        SprintF(str, pos, "x", poly[i]);
+                        pos = StrLen(str);
                         first = 0;
                     }
                 }
                 else
                 {
-                    sprintf(str , pos, "x08", poly[i]);
-                    pos = strlen(str);
+                    SprintF(str, pos, "x08", poly[i]);
+                    pos = StrLen(str);
                 }
             }
-            if (first!=0)
+            if (first != 0)
             {
-                for(var i=0;i<str.Length;++i)
+                for (var i = 0; i < str.Length; ++i)
                 {
                     str[i] = '0';
                 }
             }
         }
 
-        static void polynomial_power_mod(Span<uint> dest, 
+        static void PolynomialPowerMod(Span<uint> dest,
         ReadOnlySpan<uint> x,
             Span<ushort> power,
         ReadOnlySpan<uint> mod_poly)
         {
-            Span<uint> tmp = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
-            Span<uint> result = stackalloc uint[POLYNOMIAL_ARRAY_SIZE];
+            Span<uint> tmp = stackalloc uint[PolynomialArraySize];
+            Span<uint> result = stackalloc uint[PolynomialArraySize];
 
             x.CopyTo(tmp);
 
-            clear(result);
+            Clear(result);
             result[0] = 1;
 
-            for (int i = 0; i<POLYNOMIAL_ARRAY_SIZE; i++)
+            for (int i = 0; i < PolynomialArraySize; i++)
             {
                 ushort tmp_power = power[i];
-                for (int j = 0; j< 16; j++) {
-                    if ((tmp_power & 1) != 0) {
-                        mul(result, tmp);
-                        mod(result, mod_poly);
+                for (int j = 0; j < 16; j++)
+                {
+                    if ((tmp_power & 1) != 0)
+                    {
+                        Mul(result, tmp);
+                        Mod(result, mod_poly);
                     }
-                    square(tmp);
-                    mod(tmp, mod_poly);
+                    Square(tmp);
+                    Mod(tmp, mod_poly);
                     tmp_power = (ushort)(tmp_power >> 1);
                 }
             }
@@ -589,39 +587,39 @@ namespace XorShiftAddSharp
             result.CopyTo(dest);
         }
 
-        static void uz_clear(Span<ushort> a)
+        static void UzClear(Span<ushort> a)
         {
-            for (int i = 0; i < UZ_ARRAY_SIZE; i++)
+            for (int i = 0; i < UzArraySize; i++)
             {
                 a[i] = 0;
             }
         }
 
-        static void uint32touz(Span<ushort> x, uint y)
+        static void Uint32ToUz(Span<ushort> x, uint y)
         {
-            uz_clear(x);
+            UzClear(x);
             x[0] = (ushort)(y & 0xffff);
             x[1] = (ushort)(y >> 16);
         }
 
-        static void uz_mul(Span<ushort> result, ReadOnlySpan<ushort> x, ReadOnlySpan<ushort> y)
+        static void UzMul(Span<ushort> result, ReadOnlySpan<ushort> x, ReadOnlySpan<ushort> y)
         {
             uint tmp;
             const uint lmask = 0xffffU;
 
-            uz_clear(result);
-            for (int i = 0; i < UZ_ARRAY_SIZE; i++)
+            UzClear(result);
+            for (int i = 0; i < UzArraySize; i++)
             {
-                for (int j = 0; j < UZ_ARRAY_SIZE; j++)
+                for (int j = 0; j < UzArraySize; j++)
                 {
-                    tmp = (uint) (x[i] * y[j]);
-                    if (i + j >= UZ_ARRAY_SIZE)
+                    tmp = (uint)(x[i] * y[j]);
+                    if (i + j >= UzArraySize)
                     {
                         break;
                     }
                     tmp += result[i + j];
                     result[i + j] = (ushort)(tmp & lmask);
-                    for (int k = i + j + 1; k < UZ_ARRAY_SIZE; k++)
+                    for (int k = i + j + 1; k < UzArraySize; k++)
                     {
                         tmp = tmp >> 16;
                         if (tmp == 0)
@@ -629,17 +627,17 @@ namespace XorShiftAddSharp
                             break;
                         }
                         tmp += result[k];
-                        result[k] = (ushort) (tmp & lmask);
+                        result[k] = (ushort)(tmp & lmask);
                     }
                 }
             }
         }
 
-        static void string16touz(Span<ushort> result, ReadOnlySpan<char> str)
+        static void String16ToUz(Span<ushort> result, ReadOnlySpan<char> str)
         {
-            Span<char> s = stackalloc char[4 * UZ_ARRAY_SIZE + 1];
+            Span<char> s = stackalloc char[4 * UzArraySize + 1];
 
-            for (var i = 0; i < s.Length; ++i) s[i] = (char) 0;
+            for (var i = 0; i < s.Length; ++i) s[i] = (char)0;
 
             //strncpy(s, str, 4 * UZ_ARRAY_SIZE);
 
@@ -647,13 +645,13 @@ namespace XorShiftAddSharp
             {
                 s[i] = str[i];
             }
-            
 
 
-            s[4 * UZ_ARRAY_SIZE] = '\0';
-            int len = strlen(s);
-            uz_clear(result);
-            for (int i = 0; i < UZ_ARRAY_SIZE; i++)
+
+            s[4 * UzArraySize] = '\0';
+            int len = StrLen(s);
+            UzClear(result);
+            for (int i = 0; i < UzArraySize; i++)
             {
                 len = len - 4;
                 if (len < 0)
@@ -661,7 +659,7 @@ namespace XorShiftAddSharp
                     len = 0;
                 }
 
-                ushort tmp = (ushort) strtoul(s, len);
+                ushort tmp = (ushort)StrToUL(s, len);
                 result[i] = tmp;
                 if (len == 0)
                 {
@@ -673,5 +671,5 @@ namespace XorShiftAddSharp
 
 
 
-}
+    }
 }
