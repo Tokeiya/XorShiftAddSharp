@@ -4,29 +4,23 @@ using System.Runtime.CompilerServices;
 
 namespace XorShiftAddSharp
 {
-    /**
- * Polynomial over F<sub>2</sub>
- * LSB of ar[0], i.e. ar[0] & 1, represent constant
- */
-
+ 
 
     public static class XsAddCore
     {
-        public const float XsaddFloatMul = (1.0f / 16777216.0f);
-        public const double XsaddDoubleMul = (1.0 / 9007199254740992.0);
+        const float XsaddFloatMul = (1.0f / 16777216.0f);
+        const double XsaddDoubleMul = (1.0 / 9007199254740992.0);
+
+        const int Loop = 8;
+        const int PolynomialArraySize = 8;
+        const int UzArraySize = 8;
+
+        public const int JumpStrSize = 33;
+        public const int InnerVectorSize = 4;
 
 
-        public const int Loop = 8;
-        public const int PolynomialArraySize = 8;
-        public const int UzArraySize = 8;
-
-
-        /*
-         * this is hexadecimal string
-         */
         private const string CharacteristicPolynomial = "100000000008101840085118000000001";
 
-        /* 3^41 > 2^64 and 3^41 < 2^65 */
         private const string XsaddJumpBaseStep = "1FA2A1CF67B5FB863";
 
         public static void NextState(Span<uint> xsadd)
@@ -98,9 +92,7 @@ namespace XorShiftAddSharp
             const int size = 4;
             int i, j;
             uint count;
-            uint r;
-            //uint[] st = random;
-            
+
             random[0] = 0;
             random[1] = 0;
             random[2] = 0;
@@ -114,8 +106,8 @@ namespace XorShiftAddSharp
                 count = Loop;
             }
 
-            r = IniFunc1(random[0] ^ random[mid % size]
-                                ^ random[(size - 1) % size]);
+            var r = IniFunc1(random[0] ^ random[mid % size]
+                                       ^ random[(size - 1) % size]);
             random[mid % size] += r;
             r += (uint)initKey.Length;
             random[(mid + lag) % size] += r;
@@ -407,8 +399,6 @@ namespace XorShiftAddSharp
                     u = u >> 1;
                 }
             }
-            //*x = *result;
-
             result.CopyTo(x);
         }
 
@@ -500,7 +490,6 @@ namespace XorShiftAddSharp
 
 
             Span<char> buffer = stackalloc char[PolynomialArraySize * 8 + 1];
-            //strncpy(buffer, str, POLYNOMIAL_ARRAY_SIZE* 8);
             str.CopyTo(buffer);
 
             buffer[PolynomialArraySize * 8] = '\0';

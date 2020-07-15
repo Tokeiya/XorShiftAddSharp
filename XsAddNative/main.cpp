@@ -28,11 +28,10 @@ int main()
 {
     using namespace std;
 
-    gen(42,4,"0x40000000");
-    gen(42,0x40000000,"4");
+    char buffer[33];
+    xsadd_calculate_jump_polynomial(buffer,0,"1");
 
-    gen(114514,0xFFFFFFFF,"0x100000000");
-    gen(114514,0xFFFFFFFF,"100000000");
+    std::cout<<buffer<<std::endl;
 
 
 
