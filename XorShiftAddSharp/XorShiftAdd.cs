@@ -65,37 +65,44 @@ namespace XorShiftAddSharp
 
         public override int Next()
         {
-            return base.Next();
+#warning Next_Is_NotImpl
+            throw new NotImplementedException("Next is not implemented");
         }
 
         public override int Next(int minValue, int maxValue)
         {
-            return base.Next(minValue, maxValue);
+#warning Next_Is_NotImpl
+            throw new NotImplementedException("Next is not implemented");
         }
 
         public override int Next(int maxValue)
         {
-            return base.Next(maxValue);
+#warning Next_Is_NotImpl
+            throw new NotImplementedException("Next is not implemented");
         }
 
         public override void NextBytes(byte[] buffer)
         {
-            base.NextBytes(buffer);
+#warning NextBytes_Is_NotImpl
+            throw new NotImplementedException("NextBytes is not implemented");
         }
 
         public override void NextBytes(Span<byte> buffer)
         {
-            base.NextBytes(buffer);
+#warning NextBytes_Is_NotImpl
+            throw new NotImplementedException("NextBytes is not implemented");
         }
 
         public override double NextDouble()
         {
-            return base.NextDouble();
+#warning NextDouble_Is_NotImpl
+            throw new NotImplementedException("NextDouble is not implemented");
         }
 
         protected override double Sample()
         {
-            return base.Sample();
+#warning Sample_Is_NotImpl
+            throw new NotImplementedException("Sample is not implemented");
         }
     }
 }
