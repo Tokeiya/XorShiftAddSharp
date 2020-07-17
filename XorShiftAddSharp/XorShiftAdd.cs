@@ -1,29 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace XorShiftAddSharp
 {
-    public sealed class XorShiftAdd:Random
+    public sealed class XorShiftAdd : Random
     {
-        private readonly uint[] _state = new uint[XsAddCore.InnerVectorSize];
+        private readonly uint[] _state = new uint[XorShiftAddCore.InnerVectorSize];
 
-        private void CopyState(XorShiftAdd copyFrom)
-        {
-            for (int i = 0; i < _state.Length; i++)
-            {
-                _state[i] = copyFrom._state[i];
-            }
-        }
 
         public static string CalculateJumpPolynomial(uint mulStep, string baseStep)
         {
             try
             {
-                Span<char> buff = stackalloc char[XsAddCore.JumpStrSize];
-                XsAddCore.CalculateJumpPolynomial(buff, mulStep, baseStep);
+                Span<char> buff = stackalloc char[XorShiftAddCore.JumpStrSize];
+                XorShiftAddCore.CalculateJumpPolynomial(buff, mulStep, baseStep);
 
-                return new string(buff);
+                int len;
+
+                for (len = 0; len < buff.Length; len++)
+                {
+                    if (buff[len] == '\0') break;
+                }
+
+                return new string(buff[..len]);
             }
             catch (FormatException ex)
             {
@@ -31,78 +30,62 @@ namespace XorShiftAddSharp
             }
         }
 
-        public XorShiftAdd(uint seed)=> XsAddCore.Init(_state, seed);
+        public XorShiftAdd(uint seed) => XorShiftAddCore.Init(_state, seed);
+        public XorShiftAdd(ReadOnlySpan<uint> seeds) => XorShiftAddCore.Init(_state, seeds);
 
-
-        public XorShiftAdd(ReadOnlySpan<uint> seeds) => XsAddCore.Init(_state, seeds);
-
-        public XorShiftAdd(XorShiftAdd pivot, string jumpStr)
-        {
-            CopyState(pivot);
-
-#warning XorShiftAdd_Is_NotImpl
-            throw new NotImplementedException("XorShiftAdd is not implemented");
-        }
-
-
-        public XorShiftAdd(XorShiftAdd pivot, uint mulStep, string baseStep)
-        {
-#warning XorShiftAdd_Is_NotImpl
-            throw new NotImplementedException("XorShiftAdd is not implemented");
-        }
-
-        public XorShiftAdd Jump(uint mulStep, string baseStep)
-        {
-#warning Jump_Is_NotImpl
-            throw new NotImplementedException("Jump is not implemented");
-        }
-
-        public XorShiftAdd Jump(string jumpStr)
-        {
-#warning Jump_Is_NotImpl
-            throw new NotImplementedException("Jump is not implemented");
-        }
+        public uint NextUint() => XorShiftAddCore.NextUint32(_state);
+        public float NextFloat() => XorShiftAddCore.NextFloat(_state);
 
         public override int Next()
         {
-#warning Next_Is_NotImpl
-            throw new NotImplementedException("Next is not implemented");
+            const uint mask = int.MaxValue;
+
+
+            for (;;)
+            {
+                var tmp = XorShiftAddCore.NextUint32(_state);
+                tmp &= mask;
+                if (tmp == int.MaxValue) continue;
+
+                return (int) tmp;
+            }
         }
 
         public override int Next(int minValue, int maxValue)
         {
-#warning Next_Is_NotImpl
-            throw new NotImplementedException("Next is not implemented");
+            if (maxValue < minValue) throw new ArgumentOutOfRangeException(nameof(minValue),"minValue and maxValue was inverted.");
+
+            long diff = (long) maxValue - minValue;
+            return (int) ((long) (Sample() * diff) + minValue);
         }
 
         public override int Next(int maxValue)
         {
-#warning Next_Is_NotImpl
-            throw new NotImplementedException("Next is not implemented");
+            if (maxValue < 0) throw new ArgumentOutOfRangeException(nameof(maxValue), "maxValue is negative");
+
+            return (int) (Sample() * maxValue);
         }
 
         public override void NextBytes(byte[] buffer)
         {
-#warning NextBytes_Is_NotImpl
-            throw new NotImplementedException("NextBytes is not implemented");
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                buffer[i] = (byte) XorShiftAddCore.NextUint32(_state);
+            }
         }
 
         public override void NextBytes(Span<byte> buffer)
         {
-#warning NextBytes_Is_NotImpl
-            throw new NotImplementedException("NextBytes is not implemented");
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                buffer[i] = (byte)XorShiftAddCore.NextUint32(_state);
+            }
         }
 
-        public override double NextDouble()
-        {
-#warning NextDouble_Is_NotImpl
-            throw new NotImplementedException("NextDouble is not implemented");
-        }
+        public override double NextDouble() => XorShiftAddCore.NextDouble(_state);
 
-        protected override double Sample()
-        {
-#warning Sample_Is_NotImpl
-            throw new NotImplementedException("Sample is not implemented");
-        }
+        protected override double Sample() => XorShiftAddCore.NextDouble(_state);
+        public IReadOnlyList<uint> State => _state;
+
     }
 }

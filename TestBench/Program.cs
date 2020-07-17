@@ -22,7 +22,7 @@ namespace TestBench
         {
             Span<char> buff = stackalloc char[33];
 
-            XorShiftAddSharp.XsAddCore.CalculateJumpPolynomial(buff, 10, "gg");
+            XorShiftAddSharp.XorShiftAddCore.CalculateJumpPolynomial(buff, 10, "gg");
 
 
         }

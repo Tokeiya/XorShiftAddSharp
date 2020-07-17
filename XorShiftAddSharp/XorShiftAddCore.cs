@@ -6,7 +6,7 @@ namespace XorShiftAddSharp
 {
  
 
-    public static class XsAddCore
+    public static class XorShiftAddCore
     {
         const float XsaddFloatMul = (1.0f / 16777216.0f);
         const double XsaddDoubleMul = (1.0 / 9007199254740992.0);
