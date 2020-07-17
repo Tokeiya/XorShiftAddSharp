@@ -3,11 +3,19 @@ using System.Collections.Generic;
 
 namespace XorShiftAddSharp
 {
+    /// <summary>
+    ///XORSHIFT-ADD wrapper.
+    /// </summary>
     public sealed class XorShiftAdd : Random
     {
         private readonly uint[] _state = new uint[XorShiftAddCore.InnerVectorSize];
 
-
+        /// <summary>
+        /// calculate jump polynomial.
+        /// </summary>
+        /// <param name="mulStep">jump step is mul_step * base_step.</param>
+        /// <param name="baseStep">hexadecimal string of jump base.</param>
+        /// <returns>the result of this calculation.</returns>
         public static string CalculateJumpPolynomial(uint mulStep, string baseStep)
         {
             try
@@ -30,12 +38,44 @@ namespace XorShiftAddSharp
             }
         }
 
+
+        /// <summary>
+        /// Restore the internal vector.
+        /// </summary>
+        /// <param name="state">Recent state.</param>
+        /// <returns>Restored XorShiftAdd instance.</returns>
+        public static XorShiftAdd Restore(ReadOnlySpan<uint> state)
+        {
+#warning Load_Is_NotImpl
+            throw new NotImplementedException("Load is not implemented");
+        }
+
+
+        /// <summary>
+        ///  Initializes the internal state array with a 32-bit unsigned integer seed.
+        /// </summary>
+        /// <param name="seed">A 32-bit unsigned integer used as a seed.</param>
         public XorShiftAdd(uint seed) => XorShiftAddCore.Init(_state, seed);
+
+        /// <summary>
+        ///  Initializes the internal state array, with an array of 32-bit unsigned integers used as seeds.
+        /// </summary>
+        /// <param name="seeds">The array of 32-bit integers, used as a seed.</param>
         public XorShiftAdd(ReadOnlySpan<uint> seeds) => XorShiftAddCore.Init(_state, seeds);
 
-        public uint NextUint() => XorShiftAddCore.NextUint32(_state);
+
+
+        /// <summary>
+        /// Output 32-bit unsigned  integer pseudorandom number.
+        /// </summary>
+        /// <returns>[0..uint.MaxValue]</returns>
+        public uint NextUnsignedInt() => XorShiftAddCore.NextUint32(_state);
         public float NextFloat() => XorShiftAddCore.NextFloat(_state);
 
+        /// <summary>
+        /// Output 32-bit singed integer positive pseudorandom  number
+        /// </summary>
+        /// <returns>[0..)</returns>
         public override int Next()
         {
             const uint mask = int.MaxValue;
@@ -51,6 +91,13 @@ namespace XorShiftAddSharp
             }
         }
 
+
+        /// <summary>
+        /// Output [minvalue..maxValue) 32-bit signed integer pseudorandom number.
+        /// </summary>
+        /// <param name="minValue">Specify the minimum value that inclusive.</param>
+        /// <param name="maxValue">Specify the maxim value that exclusive.</param>
+        /// <returns>[minValue..maxValue)</returns>
         public override int Next(int minValue, int maxValue)
         {
             if (maxValue < minValue) throw new ArgumentOutOfRangeException(nameof(minValue),"minValue and maxValue was inverted.");
@@ -59,6 +106,25 @@ namespace XorShiftAddSharp
             return (int) ((long) (Sample() * diff) + minValue);
         }
 
+        /// <summary>
+        /// Jump the internal state.
+        /// </summary>
+        /// <param name="mulStep">Specify the jump step. that is used by mul_step * base_step.</param>
+        /// <param name="baseStep">Specify the hexadecimal number string less than 2^128.</param>
+        public void Jump(uint mulStep, string baseStep) => XorShiftAddCore.Jump(_state, mulStep, baseStep);
+
+
+        /// <summary>
+        /// Jump the internal state.
+        /// </summary>
+        /// <param name="jumpStr">the jump polynomial. Calculated by CalculateJumpPolynomial method.</param>
+        public void Jump(string jumpStr) => XorShiftAddCore.Jump(_state, jumpStr);
+
+        /// <summary>
+        /// Output [0..maxValue) 32-bit singed integer pseudorandom number.
+        /// </summary>
+        /// <param name="maxValue">Specify the maxim value that exclusive.</param>
+        /// <returns>[0..maxValue)</returns>
         public override int Next(int maxValue)
         {
             if (maxValue < 0) throw new ArgumentOutOfRangeException(nameof(maxValue), "maxValue is negative");
@@ -66,6 +132,10 @@ namespace XorShiftAddSharp
             return (int) (Sample() * maxValue);
         }
 
+        /// <summary>
+        /// Fill the byte array with pseudorandom bytes [0..byte.MaxValue). 
+        /// </summary>
+        /// <param name="buffer">Specify the array to be filled.</param>
         public override void NextBytes(byte[] buffer)
         {
             for (int i = 0; i < buffer.Length; i++)
@@ -74,6 +144,10 @@ namespace XorShiftAddSharp
             }
         }
 
+        /// <summary>
+        /// Fill the Span&lt;byte&gt; with pseudorandom bytes [0..byte.MaxValue).
+        /// </summary>
+        /// <param name="buffer">Specify the Span&lt;byte&gt; to be filled.</param>
         public override void NextBytes(Span<byte> buffer)
         {
             for (int i = 0; i < buffer.Length; i++)
@@ -82,9 +156,22 @@ namespace XorShiftAddSharp
             }
         }
 
+
+        /// <summary>
+        /// Output [0..1) double value.
+        /// </summary>
+        /// <returns>[0..1)</returns>
         public override double NextDouble() => XorShiftAddCore.NextDouble(_state);
 
+        /// <summary>
+        /// Output [0..1) double value.
+        /// </summary>
+        /// <returns>[0..1)</returns>
         protected override double Sample() => XorShiftAddCore.NextDouble(_state);
+
+        /// <summary>
+        /// Get the internal vector.
+        /// </summary>
         public IReadOnlyList<uint> State => _state;
 
     }

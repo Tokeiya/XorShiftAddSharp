@@ -4,8 +4,10 @@ using System.Runtime.CompilerServices;
 
 namespace XorShiftAddSharp
 {
- 
 
+    /// <summary>
+    /// Naive implementation of XORSHIFT-ADD
+    /// </summary>
     public static class XorShiftAddCore
     {
         const float XsaddFloatMul = (1.0f / 16777216.0f);
