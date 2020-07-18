@@ -7,6 +7,7 @@ namespace XorShiftAddSharp
 
     /// <summary>
     /// Naive implementation of XORSHIFT-ADD
+    /// See the original doxygen for details.
     /// </summary>
     public static class XorShiftAddCore
     {

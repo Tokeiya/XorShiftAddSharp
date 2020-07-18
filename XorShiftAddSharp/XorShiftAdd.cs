@@ -44,12 +44,25 @@ namespace XorShiftAddSharp
         /// </summary>
         /// <param name="state">Recent state.</param>
         /// <returns>Restored XorShiftAdd instance.</returns>
-        public static XorShiftAdd Restore(ReadOnlySpan<uint> state)
+        public static XorShiftAdd Restore(IReadOnlyList<uint> state)
         {
-#warning Load_Is_NotImpl
-            throw new NotImplementedException("Load is not implemented");
+            if (state.Count != XorShiftAddCore.InnerVectorSize)
+                throw new ArgumentException($"{nameof(state)} size is unexpected.");
+
+            var ret = new XorShiftAdd();
+
+            for (int i = 0; i < ret._state.Length; i++)
+            {
+                ret._state[i] = state[i];
+            }
+
+            return ret;
         }
 
+        private XorShiftAdd()
+        {
+
+        }
 
         /// <summary>
         ///  Initializes the internal state array with a 32-bit unsigned integer seed.

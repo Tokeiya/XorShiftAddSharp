@@ -1,8 +1,10 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/untitled1.dir/main.cpp.o"
-  "CMakeFiles/untitled1.dir/xsadd.c.o"
+  "CMakeFiles/untitled1.dir/main.cpp.obj"
+  "CMakeFiles/untitled1.dir/xsadd.c.obj"
+  "libuntitled1.dll.a"
+  "untitled1.exe"
+  "untitled1.exe.manifest"
   "untitled1.pdb"
-  "untitled1"
 )
 
 # Per-language clean rules from dependency scanning.

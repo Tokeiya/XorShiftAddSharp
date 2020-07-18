@@ -1,3 +1,3 @@
-/mnt/g/XorShiftAddSharp/XsAddNative/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/mnt/g/XorShiftAddSharp/XsAddNative/cmake-build-debug/CMakeFiles/untitled1.dir
-/mnt/g/XorShiftAddSharp/XsAddNative/cmake-build-debug/CMakeFiles/edit_cache.dir
+G:/XorShiftAddSharp/XsAddNative/cmake-build-debug/CMakeFiles/untitled1.dir
+G:/XorShiftAddSharp/XsAddNative/cmake-build-debug/CMakeFiles/edit_cache.dir
+G:/XorShiftAddSharp/XsAddNative/cmake-build-debug/CMakeFiles/rebuild_cache.dir

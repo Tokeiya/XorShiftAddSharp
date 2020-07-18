@@ -13,7 +13,7 @@ namespace XorShiftAddSharpTest
         public XorShiftAddTest(ITestOutputHelper output) => _output = output;
 
 
-        static void Assert(ReadOnlySpan<uint> expected, XorShiftAdd actual)
+        static void AssertInternalVector(ReadOnlySpan<uint> expected, XorShiftAdd actual)
         {
             actual.State.Count.Is(4);
 
@@ -72,14 +72,101 @@ namespace XorShiftAddSharpTest
 
             XorShiftAddCore.Init(expected, 42);
             var actual = new XorShiftAdd(42);
-            Assert(expected, actual);
+            AssertInternalVector(expected, actual);
 
             var keys = new[] { 4u, 13u, 930u, 3767u, 31980u, 967285u, 3690813u, 85575140u, 106037230u, 3994571597u, };
 
             XorShiftAddCore.Init(expected, keys);
             actual = new XorShiftAdd(keys);
-            Assert(expected, actual);
+            AssertInternalVector(expected, actual);
         }
+
+        [Fact]
+        public void RestoreTest()
+        {
+            var rnd = new XorShiftAdd(42);
+            rnd.Next();
+
+            var act = XorShiftAdd.Restore(rnd.State);
+
+            for (int i = 0; i < act.State.Count; i++)
+            {
+                act.State[i].Is(act.State[i]);
+            }
+        }
+
+        [Fact]
+        public void NextUint32Test()
+        {
+            var rnd = new XorShiftAdd(42);
+            Span<uint> state = stackalloc uint[XorShiftAddCore.InnerVectorSize];
+            XorShiftAddCore.Init(state,42);
+
+            for (int i = 0; i < 100; i++)
+            {
+                var expected = XorShiftAddCore.NextUint32(state);
+
+                rnd.NextUnsignedInt().Is(expected);
+
+            }
+        }
+
+        [Fact]
+        public void NextUintFloat()
+        {
+            var rnd = new XorShiftAdd(42);
+            Span<uint> state = stackalloc uint[XorShiftAddCore.InnerVectorSize];
+            XorShiftAddCore.Init(state, 42);
+
+            for (int i = 0; i < 100; i++)
+            {
+                var expected = XorShiftAddCore.NextFloat(state);
+                rnd.NextFloat().Is(expected);
+            }
+        }
+
+        [Fact]
+        public void NextTestA()
+        {
+            Span<uint> state = stackalloc uint[XorShiftAddCore.InnerVectorSize];
+            XorShiftAddCore.Init(state, 42);
+
+            XorShiftAdd rnd = new XorShiftAdd(42);
+            const int maxValue = 100;
+
+            for (int i = 0; i < 100; i++)
+            {
+                var expected = (int) (XorShiftAddCore.NextDouble(state) * maxValue);
+                rnd.Next(maxValue).Is(expected);
+            }
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => rnd.Next(-1));
+        }
+
+        [Fact]
+        public void NextTestB()
+        {
+            Span<uint> state = stackalloc uint[XorShiftAddCore.InnerVectorSize];
+            XorShiftAddCore.Init(state, 42);
+
+            XorShiftAdd rnd = new XorShiftAdd(42);
+
+            const int minValue = 10;
+            const int maxValue = 100;
+
+            for (int i = 0; i < 100; i++)
+            {
+                var expected = (int) ((long) (XorShiftAddCore.NextDouble(state) * (maxValue - minValue)) + minValue);
+                var act = rnd.Next(minValue, maxValue);
+                act.Is(expected);
+            }
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => rnd.Next(100, 10));
+        }
+
+
+
+
 
 
 
