@@ -1,5 +1,6 @@
 using ChainingAssertion;
 using System;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using XorShiftAddSharp;
 using Xunit;
 using Xunit.Abstractions;
@@ -82,7 +83,7 @@ namespace XorShiftAddSharpTest
         }
 
         [Fact]
-        public void RestoreTest()
+        public void RestoreTestA()
         {
             var rnd = new XorShiftAdd(42);
             rnd.Next();
@@ -94,6 +95,21 @@ namespace XorShiftAddSharpTest
                 act.State[i].Is(act.State[i]);
             }
         }
+
+        [Fact]
+        public void TestNameB()
+        {
+            Span<uint> expected = stackalloc uint[4];
+            XorShiftAddCore.Init(expected, 42);
+
+            var actual = XorShiftAdd.Restore(expected);
+
+            for (var i = 0; i < actual.State.Count; ++i)
+            {
+                actual.State[i].Is(expected[i]);
+            }
+        }
+
 
         [Fact]
         public void NextUint32Test()
@@ -162,6 +178,47 @@ namespace XorShiftAddSharpTest
             }
 
             Assert.Throws<ArgumentOutOfRangeException>(() => rnd.Next(100, 10));
+        }
+
+        [Fact]
+        public void JumpTestA()
+        {
+            const string bs = "ffff";
+            const int ms = 100;
+
+
+            var rnd = new XorShiftAdd(42);
+            Span<uint> expected = stackalloc uint[4];
+            XorShiftAddCore.Init(expected, 42);
+
+            var actual = rnd.Jump(ms, bs);
+            XorShiftAddCore.Jump(expected, ms, bs);
+
+            for (int i = 0; i < expected.Length; i++)
+            {
+                actual.State[i].Is(expected[i]);
+            }
+
+        }
+
+        [Fact]
+        public void JumpTestB()
+        {
+            const string jumbStr = "5b0abc7da8055ce3aef263ccb271d12e";
+
+            var rnd = new XorShiftAdd(42);
+            
+            Span<uint> expected = stackalloc uint[4];
+            XorShiftAddCore.Init(expected, 42);
+            XorShiftAddCore.Jump(expected, jumbStr);
+
+            var actual = rnd.Jump(jumbStr);
+
+            for (int i = 0; i < expected.Length; i++)
+            {
+                actual.State[i].Is(expected[i]);
+            }
+
         }
 
 

@@ -38,6 +38,17 @@ namespace XorShiftAddSharp
             }
         }
 
+        public static XorShiftAdd Restore(ReadOnlySpan<uint> state)
+        {
+            if (state.Length != XorShiftAddCore.InnerVectorSize)
+                throw new ArgumentException($"{nameof(state)} size is unexpected.");
+
+            var ret = new XorShiftAdd();
+
+            state.CopyTo(ret._state);
+
+            return ret;
+        }
 
         /// <summary>
         /// Restore the internal vector.
@@ -120,18 +131,35 @@ namespace XorShiftAddSharp
         }
 
         /// <summary>
-        /// Jump the internal state.
+        /// Retrieves a new XorShiftAdd jumped from this instance.
         /// </summary>
         /// <param name="mulStep">Specify the jump step. that is used by mul_step * base_step.</param>
         /// <param name="baseStep">Specify the hexadecimal number string less than 2^128.</param>
-        public void Jump(uint mulStep, string baseStep) => XorShiftAddCore.Jump(_state, mulStep, baseStep);
+        /// <returns>New XorShiftAdd that internal state was jumped. </returns>
+        public XorShiftAdd Jump(uint mulStep, string baseStep)
+        {
+            Span<uint> tmp = stackalloc uint[XorShiftAddCore.InnerVectorSize];
+            _state.CopyTo(tmp);
 
+            XorShiftAddCore.Jump(tmp, mulStep, baseStep);
+
+            return Restore(tmp);
+        }
 
         /// <summary>
         /// Jump the internal state.
         /// </summary>
         /// <param name="jumpStr">the jump polynomial. Calculated by CalculateJumpPolynomial method.</param>
-        public void Jump(string jumpStr) => XorShiftAddCore.Jump(_state, jumpStr);
+        /// <returns>New XorShiftAdd that internal state was jumped.</returns>
+        public XorShiftAdd Jump(string jumpStr)
+        {
+            Span<uint> tmp = stackalloc uint[XorShiftAddCore.InnerVectorSize];
+            _state.CopyTo(tmp);
+
+            XorShiftAddCore.Jump(tmp, jumpStr);
+
+            return Restore(tmp);
+        }
 
         /// <summary>
         /// Output [0..maxValue) 32-bit singed integer pseudorandom number.
