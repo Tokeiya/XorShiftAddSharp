@@ -128,7 +128,7 @@ namespace XorShiftAddSharpTest
         }
 
         [Fact]
-        public void NextUintFloat()
+        public void NextFloatTest()
         {
             var rnd = new XorShiftAdd(42);
             Span<uint> state = stackalloc uint[XorShiftAddCore.InnerVectorSize];
@@ -220,6 +220,56 @@ namespace XorShiftAddSharpTest
             }
 
         }
+
+        [Fact]
+        public void NextDoubleTest()
+        {
+            Span<uint> expected = stackalloc uint[4];
+            XorShiftAddCore.Init(expected, 114514);
+
+            var rnd = new XorShiftAdd(114514);
+
+            for (int i = 0; i < 100; i++)
+            {
+                rnd.NextDouble().Is(XorShiftAddCore.NextDouble(expected));
+            }
+        }
+
+        [Fact]
+        public void NextBytesTestA()
+        {
+            Span<uint> expected = stackalloc uint[4];
+            XorShiftAddCore.Init(expected, 114514);
+
+            var rnd = new XorShiftAdd(114514);
+            var actual = new byte[128];
+
+            rnd.NextBytes(actual);
+
+            foreach (var i in actual)
+            {
+                i.Is((byte) XorShiftAddCore.NextUint32(expected));
+            }
+        }
+
+        [Fact]
+        public void NextBytesTestB()
+        {
+            Span<uint> expected = stackalloc uint[4];
+            XorShiftAddCore.Init(expected, 114514);
+
+            var rnd = new XorShiftAdd(114514);
+            Span<byte> actual = stackalloc byte[128];
+
+            rnd.NextBytes(actual);
+
+            foreach (var i in actual)
+            {
+                i.Is((byte)XorShiftAddCore.NextUint32(expected));
+            }
+
+        }
+
 
 
 
