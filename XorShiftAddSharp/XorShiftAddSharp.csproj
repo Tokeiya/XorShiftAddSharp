@@ -3,6 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	  <Nullable>enable</Nullable>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	  <Version>0.1.0</Version>
+	  <Authors>Tokeiya3</Authors>
+	  <Description>XORSHIFT-ADD (XSadd) implementation in pure C#.</Description>
+	  <Copyright>tokeiya3</Copyright>
+	  <PackageLicenseExpression>BSD-3-Clause-Clear</PackageLicenseExpression>
+	  <PackageProjectUrl>https://github.com/Tokeiya/XorShiftAddSharp</PackageProjectUrl>
+	  <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
 </Project>
