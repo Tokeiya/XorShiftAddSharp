@@ -36,7 +36,7 @@ namespace XorShiftAddSharp
         /// <summary>
         ///     Get the internal vector.
         /// </summary>
-        public IReadOnlyList<uint> State => _state.ToReadOnlyList();
+        public IReadOnlyList<uint> State => _state.ToArray();
 
         /// <summary>
         ///     calculate jump polynomial.
