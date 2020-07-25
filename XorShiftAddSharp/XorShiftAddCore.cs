@@ -18,7 +18,6 @@ namespace XorShiftAddSharp
         private const int UzArraySize = 8;
 
         public const int JumpStrSize = 33;
-        public const int InnerVectorSize = 4;
 
 
         private const string CharacteristicPolynomial = "100000000008101840085118000000001";
@@ -163,7 +162,7 @@ namespace XorShiftAddSharp
             var tmp = new XorShiftAddState();
             ref XorShiftAddState work = ref tmp;
 
-            for (var i = 0; i < InnerVectorSize; i++) work.Vector[i] = 0;
+            for (var i = 0; i < XorShiftAddState.Size; i++) work.Vector[i] = 0;
 
 
             StrToPolynomial(jumpPoly, jumpStr);
@@ -178,7 +177,7 @@ namespace XorShiftAddSharp
                 NextState(ref xsadd);
             }
 
-            for (var i = 0; i < InnerVectorSize; ++i) xsadd.Vector[i] = work.Vector[i];
+            for (var i = 0; i < XorShiftAddState.Size; ++i) xsadd.Vector[i] = work.Vector[i];
         }
 
 

@@ -5,28 +5,30 @@ namespace XorShiftAddSharp
 {
     public unsafe struct XorShiftAddState
     {
-        public fixed uint Vector[XorShiftAddCore.InnerVectorSize];
+        public const int Size = 4;
+
+        public fixed uint Vector[Size];
 
         internal static XorShiftAddState Initialize(ReadOnlySpan<uint> source)
         {
-            if (source.Length != XorShiftAddCore.InnerVectorSize)
+            if (source.Length != Size)
                 throw new ArgumentException($"Unexpected {nameof(source)} Length");
 
             var ret = new XorShiftAddState();
 
-            for (int i = 0; i < XorShiftAddCore.InnerVectorSize; i++) ret.Vector[i] = source[i];
+            for (int i = 0; i < Size; i++) ret.Vector[i] = source[i];
 
             return ret;
         }
 
         internal static XorShiftAddState Initialize(IReadOnlyList<uint> source)
         {
-            if (source.Count != XorShiftAddCore.InnerVectorSize)
+            if (source.Count != Size)
                 throw new ArgumentException($"Unexpected {nameof(source)} Count");
 
             var ret = new XorShiftAddState();
 
-            for (int i = 0; i < XorShiftAddCore.InnerVectorSize; i++) ret.Vector[i] = source[i];
+            for (int i = 0; i < Size; i++) ret.Vector[i] = source[i];
 
             return ret;
         }
@@ -34,16 +36,17 @@ namespace XorShiftAddSharp
 
         public void CopyTo(ref XorShiftAddState destination)
         {
-            for (int i = 0; i < XorShiftAddCore.InnerVectorSize; i++) destination.Vector[i] = Vector[i];
+            for (int i = 0; i < Size; i++) destination.Vector[i] = Vector[i];
         }
 
         public IReadOnlyList<uint> ToReadOnlyList()
         {
-            var ret = new uint[XorShiftAddCore.InnerVectorSize];
+            var ret = new uint[Size];
 
-            for (int i = 0; i < XorShiftAddCore.InnerVectorSize; i++) ret[i] = Vector[i];
+            for (int i = 0; i < Size; i++) ret[i] = Vector[i];
 
             return ret;
         }
+
     }
 }
