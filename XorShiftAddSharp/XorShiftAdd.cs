@@ -67,7 +67,7 @@ namespace XorShiftAddSharp
 
         public static XorShiftAdd Restore(ReadOnlySpan<uint> state)
         {
-            if (state.Length != XorShiftAddCore.InnerVectorSize)
+            if (state.Length != XorShiftAddState.Size)
                 throw new ArgumentException($"{nameof(state)} size is unexpected.");
 
             return new XorShiftAdd(XorShiftAddState.Initialize(state));
@@ -81,7 +81,7 @@ namespace XorShiftAddSharp
         /// <returns>Restored XorShiftAdd instance.</returns>
         public static XorShiftAdd Restore(IReadOnlyList<uint> state)
         {
-            if (state.Count != XorShiftAddCore.InnerVectorSize)
+            if (state.Count != XorShiftAddState.Size)
                 throw new ArgumentException($"{nameof(state)} size is unexpected.");
 
             return new XorShiftAdd(XorShiftAddState.Initialize(state));

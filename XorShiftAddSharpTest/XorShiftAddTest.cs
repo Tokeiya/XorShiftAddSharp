@@ -115,7 +115,7 @@ namespace XorShiftAddSharpTest
         public void NextUint32Test()
         {
             var rnd = new XorShiftAdd(42);
-            Span<uint> state = stackalloc uint[XorShiftAddCore.InnerVectorSize];
+            Span<uint> state = stackalloc uint[XorShiftAddState.Size];
             XorShiftAddCore.Init(state,42);
 
             for (int i = 0; i < 100; i++)
@@ -131,7 +131,7 @@ namespace XorShiftAddSharpTest
         public void NextFloatTest()
         {
             var rnd = new XorShiftAdd(42);
-            Span<uint> state = stackalloc uint[XorShiftAddCore.InnerVectorSize];
+            Span<uint> state = stackalloc uint[XorShiftAddState.Size];
             XorShiftAddCore.Init(state, 42);
 
             for (int i = 0; i < 100; i++)
@@ -144,7 +144,7 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void NextTestA()
         {
-            Span<uint> state = stackalloc uint[XorShiftAddCore.InnerVectorSize];
+            Span<uint> state = stackalloc uint[XorShiftAddState.Size];
             XorShiftAddCore.Init(state, 42);
 
             XorShiftAdd rnd = new XorShiftAdd(42);
@@ -162,7 +162,7 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void NextTestB()
         {
-            Span<uint> state = stackalloc uint[XorShiftAddCore.InnerVectorSize];
+            Span<uint> state = stackalloc uint[XorShiftAddState.Size];
             XorShiftAddCore.Init(state, 42);
 
             XorShiftAdd rnd = new XorShiftAdd(42);
