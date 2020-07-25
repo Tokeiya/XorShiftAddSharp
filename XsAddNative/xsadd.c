@@ -265,8 +265,7 @@ static void xsadd_add(xsadd_t *dest, const xsadd_t *src)
     dest->state[3] ^= src->state[3];
 }
 
-static void period_certification(xsadd_t * xsadd)
-{
+static void period_certification(xsadd_t * xsadd) {
     if (xsadd->state[0] == 0 &&
         xsadd->state[1] == 0 &&
         xsadd->state[2] == 0 &&

@@ -8,7 +8,7 @@ namespace XorShiftAddSharp
     /// </summary>
     public sealed class XorShiftAdd : Random
     {
-        private readonly uint[] _state = new uint[XorShiftAddCore.InnerVectorSize];
+        private XorShiftAddState _state;
 
         /// <summary>
         /// calculate jump polynomial.
@@ -43,12 +43,9 @@ namespace XorShiftAddSharp
             if (state.Length != XorShiftAddCore.InnerVectorSize)
                 throw new ArgumentException($"{nameof(state)} size is unexpected.");
 
-            var ret = new XorShiftAdd();
-
-            state.CopyTo(ret._state);
-
-            return ret;
+            return new XorShiftAdd(XorShiftAddState.Initialize(state));
         }
+
 
         /// <summary>
         /// Restore the internal vector.
@@ -60,32 +57,25 @@ namespace XorShiftAddSharp
             if (state.Count != XorShiftAddCore.InnerVectorSize)
                 throw new ArgumentException($"{nameof(state)} size is unexpected.");
 
-            var ret = new XorShiftAdd();
-
-            for (int i = 0; i < ret._state.Length; i++)
-            {
-                ret._state[i] = state[i];
-            }
-
-            return ret;
+            return new XorShiftAdd(XorShiftAddState.Initialize(state));
         }
 
-        private XorShiftAdd()
+        private XorShiftAdd(in XorShiftAddState initialState)
         {
-
+            _state = initialState;
         }
 
         /// <summary>
         ///  Initializes the internal state array with a 32-bit unsigned integer seed.
         /// </summary>
         /// <param name="seed">A 32-bit unsigned integer used as a seed.</param>
-        public XorShiftAdd(uint seed) => XorShiftAddCore.Init(_state, seed);
+        public XorShiftAdd(uint seed) => XorShiftAddCore.Init(ref _state, seed);
 
         /// <summary>
         ///  Initializes the internal state array, with an array of 32-bit unsigned integers used as seeds.
         /// </summary>
         /// <param name="seeds">The array of 32-bit integers, used as a seed.</param>
-        public XorShiftAdd(ReadOnlySpan<uint> seeds) => XorShiftAddCore.Init(_state, seeds);
+        public XorShiftAdd(ReadOnlySpan<uint> seeds) => XorShiftAddCore.Init(ref _state, seeds);
 
 
 
@@ -93,8 +83,8 @@ namespace XorShiftAddSharp
         /// Output 32-bit unsigned  integer pseudorandom number.
         /// </summary>
         /// <returns>[0..uint.MaxValue]</returns>
-        public uint NextUnsignedInt() => XorShiftAddCore.NextUint32(_state);
-        public float NextFloat() => XorShiftAddCore.NextFloat(_state);
+        public uint NextUnsignedInt() => XorShiftAddCore.NextUint32(ref _state);
+        public float NextFloat() => XorShiftAddCore.NextFloat(ref _state);
 
         /// <summary>
         /// Output 32-bit singed integer positive pseudorandom  number
@@ -107,7 +97,7 @@ namespace XorShiftAddSharp
 
             for (;;)
             {
-                var tmp = XorShiftAddCore.NextUint32(_state);
+                var tmp = XorShiftAddCore.NextUint32(ref _state);
                 tmp &= mask;
                 if (tmp == int.MaxValue) continue;
 
@@ -137,13 +127,14 @@ namespace XorShiftAddSharp
         /// <param name="baseStep">Specify the hexadecimal number string less than 2^128.</param>
         /// <returns>New XorShiftAdd that internal state was jumped. </returns>
         public XorShiftAdd Jump(uint mulStep, string baseStep)
-        {
-            Span<uint> tmp = stackalloc uint[XorShiftAddCore.InnerVectorSize];
-            _state.CopyTo(tmp);
+        { 
+            XorShiftAddState tmp = new XorShiftAddState();
+            _state.CopyTo(ref tmp);
 
-            XorShiftAddCore.Jump(tmp, mulStep, baseStep);
+            XorShiftAddCore.Jump(ref tmp, mulStep, baseStep);
 
-            return Restore(tmp);
+            //return Restore(ref tmp);
+            return new XorShiftAdd(tmp);
         }
 
         /// <summary>
@@ -153,12 +144,12 @@ namespace XorShiftAddSharp
         /// <returns>New XorShiftAdd that internal state was jumped.</returns>
         public XorShiftAdd Jump(string jumpStr)
         {
-            Span<uint> tmp = stackalloc uint[XorShiftAddCore.InnerVectorSize];
-            _state.CopyTo(tmp);
+            XorShiftAddState tmp = new XorShiftAddState();
+            _state.CopyTo(ref tmp);
 
-            XorShiftAddCore.Jump(tmp, jumpStr);
+            XorShiftAddCore.Jump(ref tmp, jumpStr);
 
-            return Restore(tmp);
+            return new XorShiftAdd(tmp);
         }
 
         /// <summary>
@@ -181,7 +172,7 @@ namespace XorShiftAddSharp
         {
             for (int i = 0; i < buffer.Length; i++)
             {
-                buffer[i] = (byte) XorShiftAddCore.NextUint32(_state);
+                buffer[i] = (byte) XorShiftAddCore.NextUint32(ref _state);
             }
         }
 
@@ -193,7 +184,7 @@ namespace XorShiftAddSharp
         {
             for (int i = 0; i < buffer.Length; i++)
             {
-                buffer[i] = (byte)XorShiftAddCore.NextUint32(_state);
+                buffer[i] = (byte)XorShiftAddCore.NextUint32(ref _state);
             }
         }
 
@@ -202,18 +193,18 @@ namespace XorShiftAddSharp
         /// Output [0..1) double value.
         /// </summary>
         /// <returns>[0..1)</returns>
-        public override double NextDouble() => XorShiftAddCore.NextDouble(_state);
+        public override double NextDouble() => XorShiftAddCore.NextDouble(ref _state);
 
         /// <summary>
         /// Output [0..1) double value.
         /// </summary>
         /// <returns>[0..1)</returns>
-        protected override double Sample() => XorShiftAddCore.NextDouble(_state);
+        protected override double Sample() => XorShiftAddCore.NextDouble(ref _state);
 
         /// <summary>
         /// Get the internal vector.
         /// </summary>
-        public IReadOnlyList<uint> State => _state;
+        public IReadOnlyList<uint> State => _state.ToReadOnlyList();
 
     }
 }
