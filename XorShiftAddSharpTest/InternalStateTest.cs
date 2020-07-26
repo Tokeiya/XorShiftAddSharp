@@ -5,7 +5,6 @@ using ChainingAssertion;
 using XorShiftAddSharp;
 using Xunit;
 using Xunit.Abstractions;
-//using static Xunit.Assert;
 
 namespace XorShiftAddSharpTest
 {
@@ -101,13 +100,44 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void CopyToTest()
         {
-            Assert.True(false);
+            var scr = new InternalState();
+
+            for (int i = 0; i < InternalState.Size; i++)
+            {
+                scr[i] = (uint) (i + 10);
+            }
+
+            var actual = new InternalState();
+
+            scr.CopyTo(ref actual);
+
+
+            for (int i = 0; i < InternalState.Size; i++)
+            {
+                actual[i].Is(scr[i]);
+            }
+
+
         }
 
         [Fact]
         public void ToArrayTest()
         {
-            Assert.True(false);
+            var scr = new InternalState();
+
+            for (int i = 0; i < InternalState.Size; i++)
+            {
+                scr[i] = (uint) (i + 10);
+            }
+
+            var actual = scr.ToArray();
+
+            actual.Length.Is(InternalState.Size);
+
+            for (int i = 0; i < InternalState.Size; i++)
+            {
+                actual[i].Is(scr[i]);
+            }
         }
 
     }
