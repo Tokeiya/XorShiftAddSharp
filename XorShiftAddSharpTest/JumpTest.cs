@@ -10,6 +10,7 @@ namespace XorShiftAddSharpTest
 {
     public class JumpTest
     {
+
         public static IReadOnlyList<(uint mulStep, string baseStep, string expected)> TestSamples =
             new (uint mulStep, string baseStep, string expected)[]
             {
@@ -86,6 +87,7 @@ namespace XorShiftAddSharpTest
 
             foreach (var elem in ParameterizedJumpSample)
             {
+                _output.WriteLine($"{elem}");
                 XorShiftAddCore.Init(ref actual, elem.seed);
                 XorShiftAddCore.Jump(ref actual, elem.mulStep, elem.baseStep);
 
