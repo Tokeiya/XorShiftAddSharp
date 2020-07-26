@@ -4,19 +4,19 @@ using System.Collections.Generic;
 namespace XorShiftAddSharp
 {
     /// <summary>
-    /// XorShiftAdd internal vector storage.
+    /// XorShiftAdd internal state storage.
     /// </summary>
-    public unsafe struct XorShiftAddState
+    public unsafe struct InternalState
     {
         /// <summary>
-        /// Vector size.
+        /// Internal state size.
         /// </summary>
         public const int Size = 4;
 
         /// <summary>
-        /// Storage.
+        /// State
         /// </summary>
-        public fixed uint Vector[Size];
+        public fixed uint State[Size];
 
         /// <summary>
         /// Generate XorShiftAdd, initialized by specified source.
@@ -27,14 +27,14 @@ namespace XorShiftAddSharp
         /// <returns>
         /// XorShiftAddState that initialized by specified source.
         /// </returns>
-        internal static XorShiftAddState Initialize(ReadOnlySpan<uint> source)
+        internal static InternalState Initialize(ReadOnlySpan<uint> source)
         {
             if (source.Length != Size)
                 throw new ArgumentException($"Unexpected {nameof(source)} Length");
 
-            var ret = new XorShiftAddState();
+            var ret = new InternalState();
 
-            for (int i = 0; i < Size; i++) ret.Vector[i] = source[i];
+            for (int i = 0; i < Size; i++) ret.State[i] = source[i];
 
             return ret;
         }
@@ -48,20 +48,20 @@ namespace XorShiftAddSharp
         /// <returns>
         /// XorShiftAddState that initialized by specified source.
         /// </returns>
-        internal static XorShiftAddState Initialize(IReadOnlyList<uint> source)
+        internal static InternalState Initialize(IReadOnlyList<uint> source)
         {
             if (source.Count != Size)
                 throw new ArgumentException($"Unexpected {nameof(source)} Count");
 
-            var ret = new XorShiftAddState();
+            var ret = new InternalState();
 
-            for (int i = 0; i < Size; i++) ret.Vector[i] = source[i];
+            for (int i = 0; i < Size; i++) ret.State[i] = source[i];
 
             return ret;
         }
 
         /// <summary>
-        /// Get or set the vector state at the specified index.
+        /// Get or set the internal state at the specified index.
         /// </summary>
         /// <param name="index">
         /// The zero-based index of element to get or set.
@@ -71,24 +71,24 @@ namespace XorShiftAddSharp
             get
             {
                 if ((uint)index >= Size) throw new IndexOutOfRangeException();
-                return Vector[index];
+                return State[index];
             }
             set
             {
                 if ((uint)index >= Size) throw new IndexOutOfRangeException();
-                Vector[index] = value;
+                State[index] = value;
             }
         }
 
         /// <summary>
-        /// Copy internal vector state to the specified destination.
+        /// Copy internal internal state to the specified destination.
         /// </summary>
         /// <param name="destination">
         /// Specify the destination XorShiftAddState that are copied.
         /// </param>
-        public void CopyTo(ref XorShiftAddState destination)
+        public void CopyTo(ref InternalState destination)
         {
-            for (int i = 0; i < Size; i++) destination.Vector[i] = Vector[i];
+            for (int i = 0; i < Size; i++) destination.State[i] = State[i];
         }
 
 
@@ -102,7 +102,7 @@ namespace XorShiftAddSharp
         {
             var ret = new uint[Size];
 
-            for (int i = 0; i < Size; i++) ret[i] = Vector[i];
+            for (int i = 0; i < Size; i++) ret[i] = State[i];
 
             return ret;
         }

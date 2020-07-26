@@ -18,7 +18,7 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void ConstSizeTest()
         {
-            XorShiftAddState.Size.Is(4);
+            InternalState.Size.Is(4);
         }
 
         [Fact]
@@ -28,28 +28,28 @@ namespace XorShiftAddSharpTest
 
             for (int i = 0; i < array.Length; i++)
             {
-                if(i==XorShiftAddState.Size) continue;
-                Assert.Throws<ArgumentException>(() => XorShiftAddState.Initialize(new ReadOnlySpan<uint>(array, 0, i)));
+                if(i==InternalState.Size) continue;
+                Assert.Throws<ArgumentException>(() => InternalState.Initialize(new ReadOnlySpan<uint>(array, 0, i)));
 
                 var ary = array.Take(i).ToList();
-                Assert.Throws<ArgumentException>(() => XorShiftAddState.Initialize(ary));
+                Assert.Throws<ArgumentException>(() => InternalState.Initialize(ary));
             }
         }
 
         [Fact]
         public void InitializeTest()
         {
-            static void assert(XorShiftAddState actual, ReadOnlySpan<uint> expected)
+            static void assert(InternalState actual, ReadOnlySpan<uint> expected)
             {
-                for (var i = 0; i < XorShiftAddState.Size; ++i) actual[i].Is(expected[i]);
+                for (var i = 0; i < InternalState.Size; ++i) actual[i].Is(expected[i]);
             }
 
             var array = Enumerable.Range(0, 4).Select(x => (uint) (x + 1)).ToArray();
 
-            var actual = XorShiftAddState.Initialize((IReadOnlyList<uint>) array);
+            var actual = InternalState.Initialize((IReadOnlyList<uint>) array);
             assert(actual, array);
 
-            actual = XorShiftAddState.Initialize(new ReadOnlySpan<uint>(array));
+            actual = InternalState.Initialize(new ReadOnlySpan<uint>(array));
             assert(actual, array);
         }
 
@@ -57,13 +57,13 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void IndexerIndexOutOfRangeTest()
         {
-            static void Check(XorShiftAddState actual,int index)
+            static void Check(InternalState actual,int index)
             {
                 uint dmy = 0;
                 Assert.Throws<IndexOutOfRangeException>(() => dmy = actual[index]);
                 Assert.Throws<IndexOutOfRangeException>(() => actual[index] = 10);
             }
-            var actual = new XorShiftAddState();
+            var actual = new InternalState();
 
             Check(actual, -1);
             Check(actual, 4);
@@ -72,25 +72,25 @@ namespace XorShiftAddSharpTest
         [Fact]
         public unsafe void IndexerGetTest()
         {
-            var actual = new XorShiftAddState();
+            var actual = new InternalState();
 
-            for (uint i = 0; i < XorShiftAddState.Size; i++)
+            for (uint i = 0; i < InternalState.Size; i++)
             {
-                actual.Vector[i] = i + 10u;
+                actual.State[i] = i + 10u;
             }
 
-            for (int i = 0; i < XorShiftAddState.Size; i++)
+            for (int i = 0; i < InternalState.Size; i++)
             {
-                actual[i].Is(actual.Vector[i]);
+                actual[i].Is(actual.State[i]);
             }
         }
 
         [Fact]
         public unsafe void IndexerSetTest()
         {
-            var actual=new XorShiftAddState();
+            var actual=new InternalState();
 
-            for (int i = 0; i < XorShiftAddState.Size; i++)
+            for (int i = 0; i < InternalState.Size; i++)
             {
                 actual[i].Is(0u);
                 actual[i] = (uint)i + 42;

@@ -72,17 +72,17 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void ParameterizedJumpTest()
         {
-            static unsafe void assert(ReadOnlySpan<uint> expected, in XorShiftAddState actual)
+            static unsafe void assert(ReadOnlySpan<uint> expected, in InternalState actual)
             {
                 expected.Length.Is(4);
 
                 for (int i = 0; i < expected.Length; i++)
                 {
-                    expected[i].Is(actual.Vector[i]);
+                    expected[i].Is(actual.State[i]);
                 }
             }
 
-            var actual = new XorShiftAddState();
+            var actual = new InternalState();
 
             foreach (var elem in ParameterizedJumpSample)
             {

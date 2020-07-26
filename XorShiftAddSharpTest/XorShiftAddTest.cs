@@ -14,12 +14,12 @@ namespace XorShiftAddSharpTest
         public XorShiftAddTest(ITestOutputHelper output) => _output = output;
 
 
-        static unsafe void AssertInternalVector(in XorShiftAddState expected, XorShiftAdd actual)
+        static unsafe void AssertInternalVector(in InternalState expected, XorShiftAdd actual)
         {
 
-            for (int i = 0; i < XorShiftAddState.Size; i++)
+            for (int i = 0; i < InternalState.Size; i++)
             {
-                expected.Vector[i].Is(actual.State[i]);
+                expected.State[i].Is(actual.State[i]);
             }
         }
 
@@ -68,7 +68,7 @@ namespace XorShiftAddSharpTest
         public void CtorTest()
         {
 
-            var expected = new XorShiftAddState();
+            var expected = new InternalState();
 
             XorShiftAddCore.Init(ref expected, 42);
             var actual = new XorShiftAdd(42);
@@ -98,15 +98,15 @@ namespace XorShiftAddSharpTest
         [Fact]
         public unsafe void TestNameB()
         {
-            var expected=new XorShiftAddState();
+            var expected=new InternalState();
 
             XorShiftAddCore.Init(ref expected, 42);
 
-            var actual = XorShiftAdd.Restore(new ReadOnlySpan<uint>(expected.Vector,XorShiftAddState.Size));
+            var actual = XorShiftAdd.Restore(new ReadOnlySpan<uint>(expected.State,InternalState.Size));
 
             for (var i = 0; i < actual.State.Count; ++i)
             {
-                actual.State[i].Is(expected.Vector[i]);
+                actual.State[i].Is(expected.State[i]);
             }
         }
 
@@ -115,7 +115,7 @@ namespace XorShiftAddSharpTest
         public void NextUint32Test()
         {
             var rnd = new XorShiftAdd(42);
-            var state=new XorShiftAddState();
+            var state=new InternalState();
             XorShiftAddCore.Init(ref state,42);
 
             for (int i = 0; i < 100; i++)
@@ -131,7 +131,7 @@ namespace XorShiftAddSharpTest
         public void NextFloatTest()
         {
             var rnd = new XorShiftAdd(42);
-            var state = new XorShiftAddState();
+            var state = new InternalState();
             XorShiftAddCore.Init(ref state, 42);
 
             for (int i = 0; i < 100; i++)
@@ -144,7 +144,7 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void NextTestA()
         {
-            var state = new XorShiftAddState();
+            var state = new InternalState();
             XorShiftAddCore.Init(ref state, 42);
 
             XorShiftAdd rnd = new XorShiftAdd(42);
@@ -162,7 +162,7 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void NextTestB()
         {
-            var state = new XorShiftAddState();
+            var state = new InternalState();
             XorShiftAddCore.Init(ref state, 42);
 
             XorShiftAdd rnd = new XorShiftAdd(42);
@@ -188,15 +188,15 @@ namespace XorShiftAddSharpTest
 
 
             var rnd = new XorShiftAdd(42);
-            var expected = new XorShiftAddState();
+            var expected = new InternalState();
             XorShiftAddCore.Init(ref expected, 42);
 
             var actual = rnd.Jump(ms, bs);
             XorShiftAddCore.Jump(ref expected, ms, bs);
 
-            for (int i = 0; i <XorShiftAddState.Size; i++)
+            for (int i = 0; i <InternalState.Size; i++)
             {
-                actual.State[i].Is(expected.Vector[i]);
+                actual.State[i].Is(expected.State[i]);
             }
 
         }
@@ -208,15 +208,15 @@ namespace XorShiftAddSharpTest
 
             var rnd = new XorShiftAdd(42);
 
-            var expected = new XorShiftAddState();
+            var expected = new InternalState();
             XorShiftAddCore.Init(ref expected, 42);
             XorShiftAddCore.Jump(ref expected, jumbStr);
 
             var actual = rnd.Jump(jumbStr);
 
-            for (int i = 0; i < XorShiftAddState.Size; i++)
+            for (int i = 0; i < InternalState.Size; i++)
             {
-                actual.State[i].Is(expected.Vector[i]);
+                actual.State[i].Is(expected.State[i]);
             }
 
         }
@@ -224,7 +224,7 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void NextDoubleTest()
         {
-            var expected = new XorShiftAddState();
+            var expected = new InternalState();
             XorShiftAddCore.Init(ref expected, 114514);
 
             var rnd = new XorShiftAdd(114514);
@@ -238,7 +238,7 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void NextBytesTestA()
         {
-            var expected = new XorShiftAddState();
+            var expected = new InternalState();
             XorShiftAddCore.Init(ref expected, 114514);
 
             var rnd = new XorShiftAdd(114514);
@@ -255,7 +255,7 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void NextBytesTestB()
         {
-            var expected = new XorShiftAddState();
+            var expected = new InternalState();
             XorShiftAddCore.Init(ref expected, 114514);
 
             var rnd = new XorShiftAdd(114514);

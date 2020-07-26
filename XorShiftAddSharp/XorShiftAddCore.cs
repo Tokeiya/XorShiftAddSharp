@@ -24,43 +24,43 @@ namespace XorShiftAddSharp
 
         private const string XsaddJumpBaseStep = "1FA2A1CF67B5FB863";
 
-        public static void NextState(ref XorShiftAddState xsadd)
+        public static void NextState(ref InternalState xsadd)
         {
             const int sh1 = 15;
             const int sh2 = 18;
             const int sh3 = 11;
 
             uint t;
-            t = xsadd.Vector[0];
+            t = xsadd.State[0];
             t ^= t << sh1;
             t ^= t >> sh2;
-            t ^= xsadd.Vector[3] << sh3;
-            xsadd.Vector[0] = xsadd.Vector[1];
-            xsadd.Vector[1] = xsadd.Vector[2];
-            xsadd.Vector[2] = xsadd.Vector[3];
-            xsadd.Vector[3] = t;
+            t ^= xsadd.State[3] << sh3;
+            xsadd.State[0] = xsadd.State[1];
+            xsadd.State[1] = xsadd.State[2];
+            xsadd.State[2] = xsadd.State[3];
+            xsadd.State[3] = t;
         }
 
-        public static uint NextUint32(ref XorShiftAddState xsadd)
+        public static uint NextUint32(ref InternalState xsadd)
         {
             NextState(ref xsadd);
-            return xsadd.Vector[3] + xsadd.Vector[2];
+            return xsadd.State[3] + xsadd.State[2];
         }
 
-        public static float NextFloat(ref XorShiftAddState xsadd)
+        public static float NextFloat(ref InternalState xsadd)
         {
             return (NextUint32(ref xsadd) >> 8) * XsaddFloatMul;
         }
 
 
         // ReSharper disable once InconsistentNaming
-        public static float XsAddFloatOC(ref XorShiftAddState xsadd)
+        public static float XsAddFloatOC(ref InternalState xsadd)
         {
             NextState(ref xsadd);
             return 1.0f - NextFloat(ref xsadd);
         }
 
-        public static double NextDouble(ref XorShiftAddState xsadd)
+        public static double NextDouble(ref InternalState xsadd)
         {
             ulong a = NextUint32(ref xsadd);
             ulong b = NextUint32(ref xsadd);
@@ -68,23 +68,23 @@ namespace XorShiftAddSharp
             return a * XsaddDoubleMul;
         }
 
-        public static void Init(ref XorShiftAddState xsadd, uint seed)
+        public static void Init(ref InternalState xsadd, uint seed)
         {
-            xsadd.Vector[0] = seed;
-            xsadd.Vector[1] = 0;
-            xsadd.Vector[2] = 0;
-            xsadd.Vector[3] = 0;
+            xsadd.State[0] = seed;
+            xsadd.State[1] = 0;
+            xsadd.State[2] = 0;
+            xsadd.State[3] = 0;
 
             for (uint i = 1; i < Loop; i++)
-                xsadd.Vector[(int) i & 3] ^= i + 1812433253u *
-                    (xsadd.Vector[(int) (i - 1) & 3] ^
-                     (xsadd.Vector[(int) (i - 1) & 3] >> 30));
+                xsadd.State[(int) i & 3] ^= i + 1812433253u *
+                    (xsadd.State[(int) (i - 1) & 3] ^
+                     (xsadd.State[(int) (i - 1) & 3] >> 30));
 
             PeriodCertification(ref xsadd);
             for (int i = 0; i < Loop; i++) NextState(ref xsadd);
         }
 
-        public static void Init(ref XorShiftAddState xsadd, ReadOnlySpan<uint> initKey)
+        public static void Init(ref InternalState xsadd, ReadOnlySpan<uint> initKey)
         {
             const int lag = 1;
             const int mid = 1;
@@ -92,55 +92,55 @@ namespace XorShiftAddSharp
             int i, j;
             uint count;
 
-            xsadd.Vector[0] = 0;
-            xsadd.Vector[1] = 0;
-            xsadd.Vector[2] = 0;
-            xsadd.Vector[3] = 0;
+            xsadd.State[0] = 0;
+            xsadd.State[1] = 0;
+            xsadd.State[2] = 0;
+            xsadd.State[3] = 0;
             if (initKey.Length + 1 > Loop)
                 count = (uint) initKey.Length + 1;
             else
                 count = Loop;
 
-            var r = IniFunc1(xsadd.Vector[0] ^ xsadd.Vector[mid % size]
-                                             ^ xsadd.Vector[(size - 1) % size]);
-            xsadd.Vector[mid % size] += r;
+            var r = IniFunc1(xsadd.State[0] ^ xsadd.State[mid % size]
+                                             ^ xsadd.State[(size - 1) % size]);
+            xsadd.State[mid % size] += r;
             r += (uint) initKey.Length;
-            xsadd.Vector[(mid + lag) % size] += r;
-            xsadd.Vector[0] = r;
+            xsadd.State[(mid + lag) % size] += r;
+            xsadd.State[0] = r;
             count--;
             for (i = 1, j = 0; j < count && j < initKey.Length; j++)
             {
-                r = IniFunc1(xsadd.Vector[i % size]
-                             ^ xsadd.Vector[(i + mid) % size]
-                             ^ xsadd.Vector[(i + size - 1) % size]);
-                xsadd.Vector[(i + mid) % size] += r;
+                r = IniFunc1(xsadd.State[i % size]
+                             ^ xsadd.State[(i + mid) % size]
+                             ^ xsadd.State[(i + size - 1) % size]);
+                xsadd.State[(i + mid) % size] += r;
                 r += initKey[j] + (uint) i;
-                xsadd.Vector[(i + mid + lag) % size] += r;
-                xsadd.Vector[i % size] = r;
+                xsadd.State[(i + mid + lag) % size] += r;
+                xsadd.State[i % size] = r;
                 i = (i + 1) % size;
             }
 
             for (; j < count; j++)
             {
-                r = IniFunc1(xsadd.Vector[i % size]
-                             ^ xsadd.Vector[(i + mid) % size]
-                             ^ xsadd.Vector[(i + size - 1) % size]);
-                xsadd.Vector[(i + mid) % size] += r;
+                r = IniFunc1(xsadd.State[i % size]
+                             ^ xsadd.State[(i + mid) % size]
+                             ^ xsadd.State[(i + size - 1) % size]);
+                xsadd.State[(i + mid) % size] += r;
                 r += (uint) i;
-                xsadd.Vector[(i + mid + lag) % size] += r;
-                xsadd.Vector[i % size] = r;
+                xsadd.State[(i + mid + lag) % size] += r;
+                xsadd.State[i % size] = r;
                 i = (i + 1) % size;
             }
 
             for (j = 0; j < size; j++)
             {
-                r = IniFunc2(xsadd.Vector[i % size]
-                             + xsadd.Vector[(i + mid) % size]
-                             + xsadd.Vector[(i + size - 1) % size]);
-                xsadd.Vector[(i + mid) % size] ^= r;
+                r = IniFunc2(xsadd.State[i % size]
+                             + xsadd.State[(i + mid) % size]
+                             + xsadd.State[(i + size - 1) % size]);
+                xsadd.State[(i + mid) % size] ^= r;
                 r -= (uint) i;
-                xsadd.Vector[(i + mid + lag) % size] ^= r;
-                xsadd.Vector[i % size] = r;
+                xsadd.State[(i + mid + lag) % size] ^= r;
+                xsadd.State[i % size] = r;
                 i = (i + 1) % size;
             }
 
@@ -148,21 +148,21 @@ namespace XorShiftAddSharp
             for (i = 0; i < Loop; i++) NextState(ref xsadd);
         }
 
-        public static void Jump(ref XorShiftAddState xsadd, uint mulStep, string baseStep)
+        public static void Jump(ref InternalState xsadd, uint mulStep, string baseStep)
         {
             Span<char> jumpStr = stackalloc char[33];
             CalculateJumpPolynomial(jumpStr, mulStep, baseStep.Replace("0x", ""));
             Jump(ref xsadd, jumpStr);
         }
 
-        public static void Jump(ref XorShiftAddState xsadd, ReadOnlySpan<char> jumpStr)
+        public static void Jump(ref InternalState xsadd, ReadOnlySpan<char> jumpStr)
         {
             Span<uint> jumpPoly = stackalloc uint[PolynomialArraySize];
 
-            var tmp = new XorShiftAddState();
-            ref XorShiftAddState work = ref tmp;
+            var tmp = new InternalState();
+            ref InternalState work = ref tmp;
 
-            for (var i = 0; i < XorShiftAddState.Size; i++) work.Vector[i] = 0;
+            for (var i = 0; i < InternalState.Size; i++) work.State[i] = 0;
 
 
             StrToPolynomial(jumpPoly, jumpStr);
@@ -177,7 +177,7 @@ namespace XorShiftAddSharp
                 NextState(ref xsadd);
             }
 
-            for (var i = 0; i < XorShiftAddState.Size; ++i) xsadd.Vector[i] = work.Vector[i];
+            for (var i = 0; i < InternalState.Size; ++i) xsadd.State[i] = work.State[i];
         }
 
 
@@ -207,25 +207,25 @@ namespace XorShiftAddSharp
             PolynomialToStr(jumpStr, jumpPoly);
         }
 
-        private static void xsadd_add(ref XorShiftAddState dest, in XorShiftAddState src)
+        private static void xsadd_add(ref InternalState dest, in InternalState src)
         {
-            dest.Vector[0] ^= src.Vector[0];
-            dest.Vector[1] ^= src.Vector[1];
-            dest.Vector[2] ^= src.Vector[2];
-            dest.Vector[3] ^= src.Vector[3];
+            dest.State[0] ^= src.State[0];
+            dest.State[1] ^= src.State[1];
+            dest.State[2] ^= src.State[2];
+            dest.State[3] ^= src.State[3];
         }
 
-        private static void PeriodCertification(ref XorShiftAddState xsadd)
+        private static void PeriodCertification(ref InternalState xsadd)
         {
-            if (xsadd.Vector[0] == 0 &&
-                xsadd.Vector[1] == 0 &&
-                xsadd.Vector[2] == 0 &&
-                xsadd.Vector[3] == 0)
+            if (xsadd.State[0] == 0 &&
+                xsadd.State[1] == 0 &&
+                xsadd.State[2] == 0 &&
+                xsadd.State[3] == 0)
             {
-                xsadd.Vector[0] = 'X';
-                xsadd.Vector[1] = 'S';
-                xsadd.Vector[2] = 'A';
-                xsadd.Vector[3] = 'D';
+                xsadd.State[0] = 'X';
+                xsadd.State[1] = 'S';
+                xsadd.State[2] = 'A';
+                xsadd.State[3] = 'D';
             }
         }
 

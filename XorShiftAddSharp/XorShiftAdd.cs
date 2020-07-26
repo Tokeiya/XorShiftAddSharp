@@ -8,9 +8,9 @@ namespace XorShiftAddSharp
     /// </summary>
     public sealed class XorShiftAdd : Random
     {
-        private XorShiftAddState _state;
+        private InternalState _state;
 
-        private XorShiftAdd(in XorShiftAddState initialState)
+        private XorShiftAdd(in InternalState initialState)
         {
             _state = initialState;
         }
@@ -67,10 +67,10 @@ namespace XorShiftAddSharp
 
         public static XorShiftAdd Restore(ReadOnlySpan<uint> state)
         {
-            if (state.Length != XorShiftAddState.Size)
+            if (state.Length != InternalState.Size)
                 throw new ArgumentException($"{nameof(state)} size is unexpected.");
 
-            return new XorShiftAdd(XorShiftAddState.Initialize(state));
+            return new XorShiftAdd(InternalState.Initialize(state));
         }
 
 
@@ -81,10 +81,10 @@ namespace XorShiftAddSharp
         /// <returns>Restored XorShiftAdd instance.</returns>
         public static XorShiftAdd Restore(IReadOnlyList<uint> state)
         {
-            if (state.Count != XorShiftAddState.Size)
+            if (state.Count != InternalState.Size)
                 throw new ArgumentException($"{nameof(state)} size is unexpected.");
 
-            return new XorShiftAdd(XorShiftAddState.Initialize(state));
+            return new XorShiftAdd(InternalState.Initialize(state));
         }
 
 
@@ -145,7 +145,7 @@ namespace XorShiftAddSharp
         /// <returns>New XorShiftAdd that internal state was jumped. </returns>
         public XorShiftAdd Jump(uint mulStep, string baseStep)
         {
-            XorShiftAddState tmp = new XorShiftAddState();
+            InternalState tmp = new InternalState();
             _state.CopyTo(ref tmp);
 
             XorShiftAddCore.Jump(ref tmp, mulStep, baseStep);
@@ -161,7 +161,7 @@ namespace XorShiftAddSharp
         /// <returns>New XorShiftAdd that internal state was jumped.</returns>
         public XorShiftAdd Jump(string jumpStr)
         {
-            XorShiftAddState tmp = new XorShiftAddState();
+            InternalState tmp = new InternalState();
             _state.CopyTo(ref tmp);
 
             XorShiftAddCore.Jump(ref tmp, jumpStr);

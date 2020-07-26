@@ -33,7 +33,7 @@ namespace XorShiftAddSharpTest
 
         static IEnumerable<uint> GenerateSequence(uint seed, int length)
         {
-            var state = new XorShiftAddState();
+            var state = new InternalState();
             XorShiftAddCore.Init(ref state, seed);
 
             for (int i = 0; i < length; i++)
