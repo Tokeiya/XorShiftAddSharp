@@ -9,11 +9,11 @@ using Xunit.Abstractions;
 
 namespace XorShiftAddSharpTest
 {
-    public class XorShiftAddStateTest
+    public class InternalStateTest
     {
         private readonly ITestOutputHelper _output;
 
-        public XorShiftAddStateTest(ITestOutputHelper output) => _output = output;
+        public InternalStateTest(ITestOutputHelper output) => _output = output;
 
         [Fact]
         public void ConstSizeTest()
