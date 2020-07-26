@@ -290,12 +290,12 @@ namespace XorShiftAddSharpTest
         {
             static void assert(uint seed, ReadOnlySpan<uint> expected)
             {
-                var state = new uint[4];
-                XorShiftAddCore.Init(state, seed);
+                var state = new InternalState();
+                XorShiftAddCore.Init(ref state, seed);
 
                 foreach (var elem in expected)
                 {
-                    XorShiftAddCore.NextUint32(state).Is(elem);
+                    XorShiftAddCore.NextUint32(ref state).Is(elem);
                 }
             }
 
@@ -310,12 +310,12 @@ namespace XorShiftAddSharpTest
         {
             static void assert(uint seed, ReadOnlySpan<double> expected)
             {
-                var state = new uint[4];
-                XorShiftAddCore.Init(state, seed);
+                var state = new InternalState();
+                XorShiftAddCore.Init(ref state, seed);
 
                 foreach (var elem in expected)
                 {
-                    XorShiftAddCore.NextDouble(state).Is(elem);
+                    XorShiftAddCore.NextDouble(ref state).Is(elem);
                 }
             }
 
@@ -330,12 +330,12 @@ namespace XorShiftAddSharpTest
         {
             static void assert(uint seed, ReadOnlySpan<float> expected)
             {
-                var state = new uint[4];
-                XorShiftAddCore.Init(state, seed);
+                var state = new InternalState();
+                XorShiftAddCore.Init(ref state, seed);
 
                 foreach (var elem in expected)
                 {
-                    XorShiftAddCore.NextFloat(state).Is(elem);
+                    XorShiftAddCore.NextFloat(ref state).Is(elem);
                 }
             }
 
@@ -350,12 +350,13 @@ namespace XorShiftAddSharpTest
         {
             static void assert(uint seed, ReadOnlySpan<float> expected)
             {
-                var state = new uint[4];
-                XorShiftAddCore.Init(state, seed);
+                var state = new InternalState();
+                
+                XorShiftAddCore.Init(ref state, seed);
 
                 foreach (var elem in expected)
                 {
-                    XorShiftAddCore.XsAddFloatOC(state).Is(elem);
+                    XorShiftAddCore.XsAddFloatOC(ref state).Is(elem);
                 }
             }
 

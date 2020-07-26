@@ -49,13 +49,12 @@ namespace XorShiftAddSharpTest
 
         public InitTest(ITestOutputHelper output) => _output = output;
 
-        static void Assert(ReadOnlySpan<uint> actual, ReadOnlySpan<uint> expected)
+        static unsafe void Assert(in InternalState actual, ReadOnlySpan<uint> expected)
         {
-            actual.Length.Is(4);
 
             for (int i = 0; i < 4; i++)
             {
-                actual[i].Is(expected[i]);
+                actual.State[i].Is(expected[i]);
             }
         }
 
@@ -63,12 +62,13 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void InitUit32Test()
         {
-            uint[] actual = new uint[4];
+            var actual = new InternalState();
+            
 
 
             foreach (var elem in ScalarInit)
             {
-                XorShiftAddCore.Init(actual, elem.seed);
+                XorShiftAddCore.Init(ref actual, elem.seed);
                 Assert(actual, elem.expectedSamples);
             }
         }
@@ -76,11 +76,11 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void InitArrayTest()
         {
-            uint[] actual = new uint[4];
+            var  actual = new InternalState();
 
             foreach (var elem in ArrayInit)
             {
-                XorShiftAddCore.Init(actual, elem.input);
+                XorShiftAddCore.Init(ref actual, elem.input);
                 Assert(actual, elem.expectedState);
             }
         }

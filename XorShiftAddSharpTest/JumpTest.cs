@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ChainingAssertion;
 using XorShiftAddSharp;
 using Xunit;
@@ -71,23 +72,22 @@ namespace XorShiftAddSharpTest
         [Fact]
         public void ParameterizedJumpTest()
         {
-            static void assert(ReadOnlySpan<uint> expected, ReadOnlySpan<uint> actual)
+            static unsafe void assert(ReadOnlySpan<uint> expected, in InternalState actual)
             {
-                actual.Length.Is(4);
                 expected.Length.Is(4);
 
                 for (int i = 0; i < expected.Length; i++)
                 {
-                    expected[i].Is(actual[i]);
+                    expected[i].Is(actual.State[i]);
                 }
             }
 
-            var actual = new uint[4];
+            var actual = new InternalState();
 
             foreach (var elem in ParameterizedJumpSample)
             {
-                XorShiftAddCore.Init(actual, elem.seed);
-                XorShiftAddCore.Jump(actual, elem.mulStep, elem.baseStep);
+                XorShiftAddCore.Init(ref actual, elem.seed);
+                XorShiftAddCore.Jump(ref actual, elem.mulStep, elem.baseStep);
 
                 assert(elem.expected, actual);
             }
