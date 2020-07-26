@@ -12,6 +12,9 @@
 	  <PackageLicenseExpression>BSD-3-Clause-Clear</PackageLicenseExpression>
 	  <PackageProjectUrl>https://github.com/Tokeiya/XorShiftAddSharp</PackageProjectUrl>
 	  <RepositoryType>git</RepositoryType>
+	  <RepositoryUrl>https://github.com/Tokeiya/XorShiftAddSharp.git</RepositoryUrl>
+	  <PackageTags>Pseudo Random XSADD</PackageTags>
+	  <PackageReleaseNotes>There is a devastating changes from ver0.1</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
