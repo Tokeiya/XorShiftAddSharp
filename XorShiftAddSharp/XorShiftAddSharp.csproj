@@ -5,7 +5,7 @@
 	  <Nullable>enable</Nullable>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-	  <Version>0.2.0</Version>
+	  <Version>0.2.1</Version>
 	  <Authors>Tokeiya3</Authors>
 	  <Description>This is a pure C# implementation of a XORSHIFT-ADD (XSadd) pseudo-random number generator.</Description>
 	  <Copyright>tokeiya3</Copyright>
@@ -14,7 +14,7 @@
 	  <RepositoryType>git</RepositoryType>
 	  <RepositoryUrl>https://github.com/Tokeiya/XorShiftAddSharp.git</RepositoryUrl>
 	  <PackageTags>Pseudo Random XSADD</PackageTags>
-	  <PackageReleaseNotes>There is a devastating changes from ver0.1</PackageReleaseNotes>
+	  <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

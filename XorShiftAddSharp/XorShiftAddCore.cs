@@ -151,7 +151,7 @@ namespace XorShiftAddSharp
         public static void Jump(ref InternalState xsadd, uint mulStep, string baseStep)
         {
             Span<char> jumpStr = stackalloc char[33];
-            CalculateJumpPolynomial(jumpStr, mulStep, baseStep.Replace("0x", ""));
+            CalculateJumpPolynomial(jumpStr, mulStep, baseStep);
             Jump(ref xsadd, jumpStr);
         }
 
@@ -200,7 +200,7 @@ namespace XorShiftAddSharp
 
             tee[0] = 2;
 
-            String16ToUz(@base, baseStep);
+            String16ToUz(@base, baseStep.ToLower().Replace("0x", ""));
             Uint32ToUz(mul, mulStep);
             UzMul(step, mul, @base);
             PolynomialPowerMod(jumpPoly, tee, step, charcteristic);

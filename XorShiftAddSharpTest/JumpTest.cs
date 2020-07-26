@@ -13,11 +13,11 @@ namespace XorShiftAddSharpTest
         public static IReadOnlyList<(uint mulStep, string baseStep, string expected)> TestSamples =
             new (uint mulStep, string baseStep, string expected)[]
             {
-                (1145448892, "cd24fdcd11716aa1", "f1044abf11c45b62106e129c7779e0f4"),
+                (1145448892, "0xcd24fdcd11716aa1", "f1044abf11c45b62106e129c7779e0f4"),
                 (2771179739, "e700ac6c84f58579", "1671ade5bd6e8b5043b2c658b18e87de"),
-                (1783745685, "b14750a9c0d620d0", "8780c3ff7f0619c8dffa21fe7c045f59"),
+                (1783745685, "0xb14750a9c0d620d0", "8780c3ff7f0619c8dffa21fe7c045f59"),
                 (923673609, "fa3c8b37626cd479", "b97dbd1e1116395af810685d2aa652ec"),
-                (3404248797, "7e5305cbc5239792", "1caebf51224af5b4154520b91ca8e287"),
+                (3404248797, "0X7e5305cbc5239792", "1caebf51224af5b4154520b91ca8e287"),
                 (2437013609, "3217830da389788f", "ddb43c02eace0477424b417656bb4f57"),
                 (132947522, "6f728fd4ab7a87fc", "c4c29c3d3fc1c98a27dad56b5e8feafe"),
                 (503063851, "b151b6974d55b800", "8da957432e4d70b8f25eda635216e2d4"),
@@ -42,7 +42,7 @@ namespace XorShiftAddSharpTest
                 (42, 4, "0x40000000", new[] {1487782329u, 2431386006u, 46422321u, 1262793750u,}),
                 (42, 1073741824, "4", new[] {1487782329u, 2431386006u, 46422321u, 1262793750u,}),
                 (114514, 4294967295, "100000000", new[] {1989539249u, 167743719u, 2445625427u, 1312310908u,}),
-                (114514, 4294967295, "0x100000000", new[] {1989539249u, 167743719u, 2445625427u, 1312310908u,})
+                (114514, 4294967295, "0X100000000", new[] {1989539249u, 167743719u, 2445625427u, 1312310908u,})
             };
 
         private readonly ITestOutputHelper _output;

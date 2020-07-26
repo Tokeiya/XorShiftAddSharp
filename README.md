@@ -35,3 +35,9 @@ Initial release.
 Changed XorShiftAdd psesudo-random generator's internal state from `Span<uint>` to `InternalState` struct.
 Unfortunately this is a devastating changes from ver 0.1 .
 
+
+
+### ver 0.2.1
+
+Fix: XorShiftAddCore and XorShiftAdd class Jump method's  baseStep parameter can now be prefixed with "0x" or "0X".
+(Previous Jump method could be accept prefix, but CalculateJumpPolynomial couldn't be accept prefix.)
