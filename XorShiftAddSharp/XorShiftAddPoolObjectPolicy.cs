@@ -18,12 +18,31 @@ namespace XorShiftAddSharp
 
 		private InternalState _state;
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="initialSeed">Specify the initial seed.</param>
 		public XorShiftAddPoolObjectPolicy(uint initialSeed) => XorShiftAddCore.Init(ref _state, initialSeed);
 
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="keys">Specify the initial keys.</param>
 		public XorShiftAddPoolObjectPolicy(IReadOnlyList<uint> keys) => XorShiftAddCore.Init(ref _state, keys.ToArray());
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="initialState">Specify the initial state.</param>
 		public XorShiftAddPoolObjectPolicy(in InternalState initialState) => _state = initialState;
 
+		/// <summary>
+		/// Create range 2^96 XorShiftAdd instance. 
+		/// </summary>
+		/// <returns>
+		/// Return the created instance.
+		/// </returns>
 		public override XorShiftAdd Create()
 		{
 			var ret = XorShiftAdd.Restore(_state);
@@ -32,6 +51,14 @@ namespace XorShiftAddSharp
 			return ret;
 		}
 
+
+		/// <summary>
+		/// Return the instance.
+		/// </summary>
+		/// <param name="obj">Specify the instance want to return.</param>
+		/// <returns>
+		/// Always return true.
+		/// </returns>
 		public override bool Return(XorShiftAdd obj) => true;
 		public InternalState GetCurrentState() => _state;
 	}
