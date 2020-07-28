@@ -1,15 +1,13 @@
 ﻿using Microsoft.Extensions.ObjectPool;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace XorShiftAddSharp
 {
 	/// <summary>
 	/// Create range 2^96 XorShiftAdd instance.
 	/// </summary>
-	public sealed class XorShiftAddPoolObjectPolicy : PooledObjectPolicy<XorShiftAdd>
+	public sealed class XorShiftAddPoolObjectPolicy : PooledObjectPolicy<XorShiftAdd>,IXorShiftAddPoolObjectPolicy
 	{
 		/// <summary>
 		/// Polynomial string of 2^96 jumping.

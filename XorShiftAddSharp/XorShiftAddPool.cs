@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Microsoft.Extensions.ObjectPool;
 
 namespace XorShiftAddSharp
@@ -11,77 +13,121 @@ namespace XorShiftAddSharp
 	/// </summary>
 	public class XorShiftAddPool : ObjectPool<XorShiftAdd>
 	{
-		public XorShiftAddPool(uint initialSeed)
+		private XorShiftAdd? _firstItem;
+		private readonly XorShiftAdd?[] _items;
+		private readonly IXorShiftAddPoolObjectPolicy _policy;
+		private readonly XorShiftAddPoolObjectPolicy? _fastpolicy;
+		private bool _isDefaultPolicy;
+
+
+
+		public XorShiftAddPool(uint initialSeed) : this(initialSeed, Environment.ProcessorCount * 2)
 		{
-#warning XorShiftAddPool_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPool is not implemented");
 		}
 
-		public XorShiftAddPool(uint initialSeed, int maximumRetained)
+		public XorShiftAddPool(uint initialSeed, int maximumRetained) : this(
+			new XorShiftAddPoolObjectPolicy(initialSeed), maximumRetained)
 		{
-#warning XorShiftAddPool_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPool is not implemented");
+			if (maximumRetained <= 0)
+				throw new ArgumentException($"{nameof(maximumRetained)} needs to be greater than 0.");
 		}
 
-		public XorShiftAddPool(IReadOnlyList<uint> keys)
+		public XorShiftAddPool(IReadOnlyList<uint> keys) : this(new XorShiftAddPoolObjectPolicy(keys),
+			Environment.ProcessorCount * 2)
 		{
-#warning XorShiftAddPool_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPool is not implemented");
 		}
 
-		public XorShiftAddPool(IReadOnlyList<uint> keys, int maximumRetained)
+		public XorShiftAddPool(IReadOnlyList<uint> keys, int maximumRetained) : this(
+			new XorShiftAddPoolObjectPolicy(keys), maximumRetained)
 		{
-#warning XorShiftAddPool_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPool is not implemented");
+			if (maximumRetained <= 0)
+				throw new ArgumentException($"{nameof(maximumRetained)} needs to be greater than 0.");
 		}
 
-		public XorShiftAddPool(InternalState initialState, IEnumerable<InternalState> initialItems)
+		public XorShiftAddPool(InternalState initialState, IReadOnlyList<InternalState> initialItems) : this(initialState,
+			initialItems, Environment.ProcessorCount * 2)
 		{
-#warning XorShiftAddPool_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPool is not implemented");
 		}
 
-		public XorShiftAddPool(InternalState initialState, IEnumerable<InternalState> initialItems, int maximumRetained)
+		public XorShiftAddPool(InternalState initialState, IReadOnlyList<InternalState> initialItems,
+			int maximumRetained) : this(new XorShiftAddPoolObjectPolicy(initialState), maximumRetained)
 		{
-#warning XorShiftAddPool_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPool is not implemented");
+			if (maximumRetained <= 0)
+				throw new ArgumentException($"{nameof(maximumRetained)} needs to be greater than 0.");
+			if (initialItems.Count >= maximumRetained)
+				throw new ArgumentException($"{nameof(maximumRetained)} < {nameof(initialItems.Count)}");
+
+			_items = new XorShiftAdd[maximumRetained - 1];
+			_firstItem = XorShiftAdd.Restore(initialItems[0]);
+
+			for (int i = 1; i < initialItems.Count; i++)
+			{
+				_items[i - 1] = XorShiftAdd.Restore(initialItems[i]);
+			}
 		}
 
-		public XorShiftAddPool(IPooledObjectPolicy<XorShiftAdd> policy)
+		public XorShiftAddPool(IXorShiftAddPoolObjectPolicy policy) : this(policy, Environment.ProcessorCount * 2)
 		{
-#warning XorShiftAddPool_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPool is not implemented");
 		}
 
-		public XorShiftAddPool(IPooledObjectPolicy<XorShiftAdd> policy, int maximumRetained)
+		public XorShiftAddPool(IXorShiftAddPoolObjectPolicy policy, int maximumRetained)
 		{
-#warning XorShiftAddPool_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPool is not implemented");
+			if (maximumRetained <= 0)
+				throw new ArgumentException($"{nameof(maximumRetained)} needs to be greater than 0.");
+
+			_policy = policy;
+			_fastpolicy = policy as XorShiftAddPoolObjectPolicy;
+
+			_items = new XorShiftAdd[maximumRetained - 1];
+			_isDefaultPolicy = policy is XorShiftAddPoolObjectPolicy;
 		}
 
 		public override XorShiftAdd Get()
 		{
-#warning Get_Is_NotImpl
-			throw new NotImplementedException("Get is not implemented");
+			var val = _firstItem;
+
+			if (val is null || Interlocked.CompareExchange(ref _firstItem, null, val) != val)
+			{
+				var items = _items;
+
+				for (int i = 0; i < items.Length; i++)
+				{
+					val = items[i];
+					if (val != null && Interlocked.CompareExchange(ref items[i], null, val) == val)
+					{
+						return val;
+					}
+				}
+
+				val = Create();
+			}
+
+			return val;
 		}
+
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		private XorShiftAdd Create() => _fastpolicy?.Create() ?? _policy.Create();
 
 		public override void Return(XorShiftAdd obj)
 		{
-#warning Return_Is_NotImpl
-			throw new NotImplementedException("Return is not implemented");
+			if (_isDefaultPolicy || (_fastpolicy?.Return(obj) ?? _policy.Return(obj)))
+			{
+				if (_firstItem != null || Interlocked.CompareExchange(ref _firstItem, obj, null) != null)
+				{
+					var items = _items;
+					for (int i = 0;
+						i < items.Length && Interlocked.CompareExchange(ref items[i], obj, null) != null;
+						i++)
+					{
+					}
+				}
+			}
 		}
 
-		public InternalState GetCurrentState()
-		{
-#warning GetCurrentState_Is_NotImpl
-			throw new NotImplementedException("GetCurrentState is not implemented");
+		public InternalState GetCurrentState() => _policy.GetCurrentState();
 
-		}
 
-		public IEnumerable<InternalState> GetCurrentItems()
-		{
-#warning GetCurrentItems_Is_NotImpl
-			throw new NotImplementedException("GetCurrentItems is not implemented");
-		}
+		public IReadOnlyList<InternalState> GetCurrentItems() => _items.Select(x=>x.GetCurrentState()).ToArray();
+
 	}
 }
