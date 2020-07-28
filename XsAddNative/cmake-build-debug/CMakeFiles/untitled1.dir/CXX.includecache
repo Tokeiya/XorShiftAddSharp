@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+G:/XorShiftAddSharp/XsAddNative/main.cpp
+iostream
+-
+array
+-
+vector
+-
+memory
+-
+xsadd.h
+G:/XorShiftAddSharp/XsAddNative/xsadd.h
+iomanip
+-
+string_view
+-
+
+G:/XorShiftAddSharp/XsAddNative/xsadd.h
+stdint.h
+-
+inttypes.h
+-
+

@@ -59,28 +59,28 @@ include CMakeFiles/untitled1.dir/flags.make
 CMakeFiles/untitled1.dir/main.cpp.obj: CMakeFiles/untitled1.dir/flags.make
 CMakeFiles/untitled1.dir/main.cpp.obj: ../main.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=G:\XorShiftAddSharp\XsAddNative\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/untitled1.dir/main.cpp.obj"
-	C:\msys64\mingw64\bin\clang++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\untitled1.dir\main.cpp.obj -c G:\XorShiftAddSharp\XsAddNative\main.cpp
+	C:\msys64\mingw64\bin\g++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\untitled1.dir\main.cpp.obj -c G:\XorShiftAddSharp\XsAddNative\main.cpp
 
 CMakeFiles/untitled1.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/untitled1.dir/main.cpp.i"
-	C:\msys64\mingw64\bin\clang++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\XorShiftAddSharp\XsAddNative\main.cpp > CMakeFiles\untitled1.dir\main.cpp.i
+	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E G:\XorShiftAddSharp\XsAddNative\main.cpp > CMakeFiles\untitled1.dir\main.cpp.i
 
 CMakeFiles/untitled1.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/untitled1.dir/main.cpp.s"
-	C:\msys64\mingw64\bin\clang++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\XorShiftAddSharp\XsAddNative\main.cpp -o CMakeFiles\untitled1.dir\main.cpp.s
+	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S G:\XorShiftAddSharp\XsAddNative\main.cpp -o CMakeFiles\untitled1.dir\main.cpp.s
 
 CMakeFiles/untitled1.dir/xsadd.c.obj: CMakeFiles/untitled1.dir/flags.make
 CMakeFiles/untitled1.dir/xsadd.c.obj: ../xsadd.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=G:\XorShiftAddSharp\XsAddNative\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/untitled1.dir/xsadd.c.obj"
-	C:\msys64\mingw64\bin\clang.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\untitled1.dir\xsadd.c.obj   -c G:\XorShiftAddSharp\XsAddNative\xsadd.c
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\untitled1.dir\xsadd.c.obj   -c G:\XorShiftAddSharp\XsAddNative\xsadd.c
 
 CMakeFiles/untitled1.dir/xsadd.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/untitled1.dir/xsadd.c.i"
-	C:\msys64\mingw64\bin\clang.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E G:\XorShiftAddSharp\XsAddNative\xsadd.c > CMakeFiles\untitled1.dir\xsadd.c.i
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E G:\XorShiftAddSharp\XsAddNative\xsadd.c > CMakeFiles\untitled1.dir\xsadd.c.i
 
 CMakeFiles/untitled1.dir/xsadd.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/untitled1.dir/xsadd.c.s"
-	C:\msys64\mingw64\bin\clang.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S G:\XorShiftAddSharp\XsAddNative\xsadd.c -o CMakeFiles\untitled1.dir\xsadd.c.s
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S G:\XorShiftAddSharp\XsAddNative\xsadd.c -o CMakeFiles\untitled1.dir\xsadd.c.s
 
 # Object files for target untitled1
 untitled1_OBJECTS = \

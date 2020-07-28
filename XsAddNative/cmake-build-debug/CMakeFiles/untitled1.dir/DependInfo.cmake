@@ -7,7 +7,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_C
   "G:/XorShiftAddSharp/XsAddNative/xsadd.c" "G:/XorShiftAddSharp/XsAddNative/cmake-build-debug/CMakeFiles/untitled1.dir/xsadd.c.obj"
   )
-set(CMAKE_C_COMPILER_ID "Clang")
+set(CMAKE_C_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH
@@ -15,7 +15,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
 set(CMAKE_DEPENDS_CHECK_CXX
   "G:/XorShiftAddSharp/XsAddNative/main.cpp" "G:/XorShiftAddSharp/XsAddNative/cmake-build-debug/CMakeFiles/untitled1.dir/main.cpp.obj"
   )
-set(CMAKE_CXX_COMPILER_ID "Clang")
+set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH

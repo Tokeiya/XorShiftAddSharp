@@ -29,11 +29,9 @@ int main()
     using namespace std;
 
     char buffer[33];
-    xsadd_calculate_jump_polynomial(buffer,0,"1");
+    xsadd_calculate_jump_polynomial(buffer,1,"0x1000000000000000000000000");
 
     std::cout<<buffer<<std::endl;
-
-
 
 
 
