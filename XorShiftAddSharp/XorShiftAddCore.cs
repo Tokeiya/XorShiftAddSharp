@@ -157,15 +157,28 @@ namespace XorShiftAddSharp
 
         public static void Jump(ref InternalState xsadd, ReadOnlySpan<char> jumpStr)
         {
-            Span<uint> jumpPoly = stackalloc uint[PolynomialArraySize];
+	        static bool chk(ReadOnlySpan<char> value)
+	        {
+		        var ret = true;
+		        ret |= value[0] == '0';
+		        ret |= (value[1] == 'x' || value[1] == 'X');
+
+		        return ret;
+	        }
+
+
+
+	        Span<uint> jumpPoly = stackalloc uint[PolynomialArraySize];
 
             var tmp = new InternalState();
             ref InternalState work = ref tmp;
 
             for (var i = 0; i < InternalState.Size; i++) work.State[i] = 0;
 
+            var str = chk(jumpStr) ? jumpStr[2..] : jumpStr;
 
-            StrToPolynomial(jumpPoly, jumpStr);
+
+            StrToPolynomial(jumpPoly, str);
 
             for (int i = 0; i < PolynomialArraySize; ++i)
             for (int j = 0; j < 32; ++j)

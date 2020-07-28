@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.ObjectPool;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace XorShiftAddSharp
 {
@@ -13,42 +16,23 @@ namespace XorShiftAddSharp
 		/// </summary>
 		private const string JumpStr = "5d9ae8e063f5deee4fd1583cf8f7f9d5";
 
-		public XorShiftAddPoolObjectPolicy(uint initialSeed)
-		{
-#warning XorShiftAddPoolObjectPolicy_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPoolObjectPolicy is not implemented");
-		}
+		private InternalState _state;
 
-		public XorShiftAddPoolObjectPolicy(uint[] keys)
-		{
-#warning XorShiftAddPool_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPool is not implemented");
+		public XorShiftAddPoolObjectPolicy(uint initialSeed) => XorShiftAddCore.Init(ref _state, initialSeed);
 
-		}
+		public XorShiftAddPoolObjectPolicy(IReadOnlyList<uint> keys) => XorShiftAddCore.Init(ref _state, keys.ToArray());
 
-		public XorShiftAddPoolObjectPolicy(InternalState initialState)
-		{
-#warning XorShiftAddPoolObjectPolicy_Is_NotImpl
-			throw new NotImplementedException("XorShiftAddPoolObjectPolicy is not implemented");
-		}
+		public XorShiftAddPoolObjectPolicy(in InternalState initialState) => _state = initialState;
 
 		public override XorShiftAdd Create()
 		{
-#warning Create_Is_NotImpl
-			throw new NotImplementedException("Create is not implemented");
+			var ret = XorShiftAdd.Restore(_state);
+			XorShiftAddCore.Jump(ref _state, JumpStr);
+
+			return ret;
 		}
 
-		public override bool Return(XorShiftAdd obj)
-		{
-#warning Return_Is_NotImpl
-			throw new NotImplementedException("Return is not implemented");
-
-		}
-
-		public InternalState GetCurrentState()
-		{
-#warning GetCurrentState_Is_NotImpl
-			throw new NotImplementedException("GetCurrentState is not implemented");
-		}
+		public override bool Return(XorShiftAdd obj) => true;
+		public InternalState GetCurrentState() => _state;
 	}
 }
