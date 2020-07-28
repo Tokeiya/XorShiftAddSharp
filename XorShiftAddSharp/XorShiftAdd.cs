@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace XorShiftAddSharp
 {
     /// <summary>
-    ///     XORSHIFT-ADD wrapper.
+    /// XORSHIFT-ADD wrapper.
     /// </summary>
     public sealed class XorShiftAdd : Random
     {
@@ -16,7 +16,7 @@ namespace XorShiftAddSharp
         }
 
         /// <summary>
-        ///     Initializes the internal state array with a 32-bit unsigned integer seed.
+        /// Initializes the internal state array with a 32-bit unsigned integer seed.
         /// </summary>
         /// <param name="seed">A 32-bit unsigned integer used as a seed.</param>
         public XorShiftAdd(uint seed)
@@ -33,13 +33,11 @@ namespace XorShiftAddSharp
             XorShiftAddCore.Init(ref _state, seeds);
         }
 
-        /// <summary>
-        ///     Get the internal vector.
-        /// </summary>
-        public IReadOnlyList<uint> State => _state.ToArray();
+        public InternalState GetCurrentState() => _state;
+
 
         /// <summary>
-        ///     calculate jump polynomial.
+        /// calculate jump polynomial.
         /// </summary>
         /// <param name="mulStep">jump step is mul_step * base_step.</param>
         /// <param name="baseStep">hexadecimal string of jump base.</param>
@@ -65,20 +63,19 @@ namespace XorShiftAddSharp
             }
         }
 
-        public static XorShiftAdd Restore(ReadOnlySpan<uint> state)
-        {
-            if (state.Length != InternalState.Size)
-                throw new ArgumentException($"{nameof(state)} size is unexpected.");
-
-            return new XorShiftAdd(InternalState.Initialize(state));
-        }
-
 
         /// <summary>
-        ///     Restore the internal vector.
+        /// Restore the pseudo-random generator from specified state.
         /// </summary>
-        /// <param name="state">Recent state.</param>
-        /// <returns>Restored XorShiftAdd instance.</returns>
+        /// <param name="state">Specify the state to restore.</param>
+        /// <returns>pseudo-random generator that was restored from specified internal state.</returns>
+        public static XorShiftAdd Restore(InternalState state) => new XorShiftAdd(state);
+
+        /// <summary>
+        /// Restore the pseudo-random generator from specified state.
+        /// </summary>
+        /// <param name="state">Specify the state to restore.</param>
+        /// <returns>pseudo-random generator that was restored from specified internal state.</returns>
         public static XorShiftAdd Restore(IReadOnlyList<uint> state)
         {
             if (state.Count != InternalState.Size)
@@ -89,7 +86,7 @@ namespace XorShiftAddSharp
 
 
         /// <summary>
-        ///     Output 32-bit unsigned  integer pseudorandom number.
+        /// Output 32-bit unsigned  integer pseudorandom number.
         /// </summary>
         /// <returns>[0..uint.MaxValue]</returns>
         public uint NextUnsignedInt()
@@ -97,13 +94,18 @@ namespace XorShiftAddSharp
             return XorShiftAddCore.NextUint32(ref _state);
         }
 
+
+        /// <summary>
+        /// Output the 23bit resolution float pseudorandom number.
+        /// </summary>
+        /// <returns>[0.0..1.0)</returns>
         public float NextFloat()
         {
             return XorShiftAddCore.NextFloat(ref _state);
         }
 
         /// <summary>
-        ///     Output 32-bit singed integer positive pseudorandom  number
+        /// Output 32-bit singed integer positive pseudorandom  number
         /// </summary>
         /// <returns>[0..)</returns>
         public override int Next()
@@ -123,7 +125,7 @@ namespace XorShiftAddSharp
 
 
         /// <summary>
-        ///     Output [minvalue..maxValue) 32-bit signed integer pseudorandom number.
+        /// Output [minvalue..maxValue) 32-bit signed integer pseudorandom number.
         /// </summary>
         /// <param name="minValue">Specify the minimum value that inclusive.</param>
         /// <param name="maxValue">Specify the maxim value that exclusive.</param>
@@ -138,7 +140,7 @@ namespace XorShiftAddSharp
         }
 
         /// <summary>
-        ///     Retrieves a new XorShiftAdd jumped from this instance.
+        /// Retrieves a new XorShiftAdd jumped from this instance.
         /// </summary>
         /// <param name="mulStep">Specify the jump step. that is used by mul_step * base_step.</param>
         /// <param name="baseStep">Specify the hexadecimal number string less than 2^128.</param>
@@ -155,7 +157,7 @@ namespace XorShiftAddSharp
         }
 
         /// <summary>
-        ///     Jump the internal state.
+        /// Jump the internal state.
         /// </summary>
         /// <param name="jumpStr">the jump polynomial. Calculated by CalculateJumpPolynomial method.</param>
         /// <returns>New XorShiftAdd that internal state was jumped.</returns>
@@ -170,7 +172,7 @@ namespace XorShiftAddSharp
         }
 
         /// <summary>
-        ///     Output [0..maxValue) 32-bit singed integer pseudorandom number.
+        /// Output [0..maxValue) 32-bit singed integer pseudorandom number.
         /// </summary>
         /// <param name="maxValue">Specify the maxim value that exclusive.</param>
         /// <returns>[0..maxValue)</returns>
@@ -182,7 +184,7 @@ namespace XorShiftAddSharp
         }
 
         /// <summary>
-        ///     Fill the byte array with pseudorandom bytes [0..byte.MaxValue).
+        /// Fill the byte array with pseudorandom bytes [0..byte.MaxValue).
         /// </summary>
         /// <param name="buffer">Specify the array to be filled.</param>
         public override void NextBytes(byte[] buffer)
@@ -191,7 +193,7 @@ namespace XorShiftAddSharp
         }
 
         /// <summary>
-        ///     Fill the Span&lt;byte&gt; with pseudorandom bytes [0..byte.MaxValue).
+        /// Fill the Span&lt;byte&gt; with pseudorandom bytes [0..byte.MaxValue).
         /// </summary>
         /// <param name="buffer">Specify the Span&lt;byte&gt; to be filled.</param>
         public override void NextBytes(Span<byte> buffer)
@@ -201,7 +203,7 @@ namespace XorShiftAddSharp
 
 
         /// <summary>
-        ///     Output [0..1) double value.
+        /// Output [0.0..1.0) 53bit resolution double value.
         /// </summary>
         /// <returns>[0..1)</returns>
         public override double NextDouble()
