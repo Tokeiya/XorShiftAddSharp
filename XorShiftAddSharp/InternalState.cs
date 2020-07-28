@@ -27,7 +27,7 @@ namespace XorShiftAddSharp
         /// <returns>
         /// XorShiftAddState that initialized by specified source.
         /// </returns>
-        internal static InternalState Initialize(ReadOnlySpan<uint> source)
+        public static InternalState Initialize(ReadOnlySpan<uint> source)
         {
             if (source.Length != Size)
                 throw new ArgumentException($"Unexpected {nameof(source)} Length");
@@ -48,7 +48,7 @@ namespace XorShiftAddSharp
         /// <returns>
         /// XorShiftAddState that initialized by specified source.
         /// </returns>
-        internal static InternalState Initialize(IReadOnlyList<uint> source)
+        public static InternalState Initialize(IReadOnlyList<uint> source)
         {
             if (source.Count != Size)
                 throw new ArgumentException($"Unexpected {nameof(source)} Count");
