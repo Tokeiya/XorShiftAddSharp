@@ -68,7 +68,7 @@ namespace XorShiftAddSharp
             return a * XsaddDoubleMul;
         }
 
-        public static void Init(ref InternalState xsadd, uint seed)
+        public static void Init(out InternalState xsadd, uint seed)
         {
             xsadd.State[0] = seed;
             xsadd.State[1] = 0;
@@ -84,7 +84,7 @@ namespace XorShiftAddSharp
             for (int i = 0; i < Loop; i++) NextState(ref xsadd);
         }
 
-        public static void Init(ref InternalState xsadd, ReadOnlySpan<uint> initKey)
+        public static void Init(out InternalState xsadd, ReadOnlySpan<uint> initKey)
         {
             const int lag = 1;
             const int mid = 1;
@@ -160,13 +160,13 @@ namespace XorShiftAddSharp
 	        static bool chk(ReadOnlySpan<char> value)
 	        {
 		        var ret = true;
-		        ret |= value[0] == '0';
-		        ret |= (value[1] == 'x' || value[1] == 'X');
+		        ret &= value[0] == '0';
+		        ret &= (value[1] == 'x' || value[1] == 'X');
 
 		        return ret;
 	        }
 
-
+            var tmpA=new string(jumpStr);
 
 	        Span<uint> jumpPoly = stackalloc uint[PolynomialArraySize];
 
@@ -177,6 +177,7 @@ namespace XorShiftAddSharp
 
             var str = chk(jumpStr) ? jumpStr[2..] : jumpStr;
 
+            var tmpB = new string(str);
 
             StrToPolynomial(jumpPoly, str);
 
