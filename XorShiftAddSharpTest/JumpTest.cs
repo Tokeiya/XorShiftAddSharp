@@ -83,12 +83,10 @@ namespace XorShiftAddSharpTest
                 }
             }
 
-            var actual = new InternalState();
-
             foreach (var elem in ParameterizedJumpSample)
             {
                 _output.WriteLine($"{elem}");
-                XorShiftAddCore.Init(ref actual, elem.seed);
+                XorShiftAddCore.Init(out var actual, elem.seed);
                 XorShiftAddCore.Jump(ref actual, elem.mulStep, elem.baseStep);
 
                 assert(elem.expected, actual);

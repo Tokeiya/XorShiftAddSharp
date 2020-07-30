@@ -26,14 +26,24 @@ void gen(uint32_t seed,uint32_t mul_step,const char* base_step){
 
 int main()
 {
-    using namespace std;
+    xsadd_t state;
+    xsadd_init(&state,42);
 
-    char buffer[33];
-    xsadd_calculate_jump_polynomial(buffer,1,"0x1000000000000000000000000");
+    for (int i = 0; i < 4; ++i) {
+        std::cout<<state.state[i]<<std::endl;
+    }
 
-    std::cout<<buffer<<std::endl;
+    std::cout<<std::endl;
 
+    xsadd_jump(&state,4,"0x40000000");
 
+    for (int i = 0; i < 4; ++i) {
+        std::cout<<state.state[i]<<std::endl;
+    }
+
+    char buff[33];
+    xsadd_calculate_jump_polynomial(buff,4,"0x40000000");
+    std::cout<<std::endl<<buff<<std::endl;
 
 
 

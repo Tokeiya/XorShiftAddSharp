@@ -20,14 +20,14 @@ namespace XorShiftAddSharp
 		/// Constructor.
 		/// </summary>
 		/// <param name="initialSeed">Specify the initial seed.</param>
-		public XorShiftAddPoolObjectPolicy(uint initialSeed) => XorShiftAddCore.Init(ref _state, initialSeed);
+		public XorShiftAddPoolObjectPolicy(uint initialSeed) => XorShiftAddCore.Init(out _state, initialSeed);
 
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="keys">Specify the initial keys.</param>
-		public XorShiftAddPoolObjectPolicy(IReadOnlyList<uint> keys) => XorShiftAddCore.Init(ref _state, keys.ToArray());
+		public XorShiftAddPoolObjectPolicy(IReadOnlyList<uint> keys) => XorShiftAddCore.Init(out _state, keys.ToArray());
 
 		/// <summary>
 		/// Constructor.

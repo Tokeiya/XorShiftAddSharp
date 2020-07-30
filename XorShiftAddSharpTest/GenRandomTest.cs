@@ -291,7 +291,7 @@ namespace XorShiftAddSharpTest
             static void assert(uint seed, ReadOnlySpan<uint> expected)
             {
                 var state = new InternalState();
-                XorShiftAddCore.Init(ref state, seed);
+                XorShiftAddCore.Init(out state, seed);
 
                 foreach (var elem in expected)
                 {
@@ -311,7 +311,7 @@ namespace XorShiftAddSharpTest
             static void assert(uint seed, ReadOnlySpan<double> expected)
             {
                 var state = new InternalState();
-                XorShiftAddCore.Init(ref state, seed);
+                XorShiftAddCore.Init(out state, seed);
 
                 foreach (var elem in expected)
                 {
@@ -331,7 +331,7 @@ namespace XorShiftAddSharpTest
             static void assert(uint seed, ReadOnlySpan<float> expected)
             {
                 var state = new InternalState();
-                XorShiftAddCore.Init(ref state, seed);
+                XorShiftAddCore.Init(out state, seed);
 
                 foreach (var elem in expected)
                 {
@@ -352,7 +352,7 @@ namespace XorShiftAddSharpTest
             {
                 var state = new InternalState();
                 
-                XorShiftAddCore.Init(ref state, seed);
+                XorShiftAddCore.Init(out state, seed);
 
                 foreach (var elem in expected)
                 {

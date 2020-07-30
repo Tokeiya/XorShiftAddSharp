@@ -38,15 +38,15 @@ namespace XorShiftAddSharpTest
 			var actual=new XorShiftAddPoolObjectPolicy(42);
 
 			InternalState expected=new InternalState();
-			XorShiftAddCore.Init(ref expected,42);
+			XorShiftAddCore.Init(out expected,42);
 			Assert(actual, expected);
 
 			var keys = new uint[] {42, 114514, 810};
 			actual = new XorShiftAddPoolObjectPolicy(keys);
-			XorShiftAddCore.Init(ref expected, keys);
+			XorShiftAddCore.Init(out expected, keys);
 			Assert(actual,expected);
 
-			XorShiftAddCore.Init(ref expected, 114514);
+			XorShiftAddCore.Init(out expected, 114514);
 			actual=new XorShiftAddPoolObjectPolicy(expected);
 			Assert(actual,expected);
 		}
@@ -57,7 +57,7 @@ namespace XorShiftAddSharpTest
 			var actual = new XorShiftAddPoolObjectPolicy(42);
 
 			InternalState expected = new InternalState();
-			XorShiftAddCore.Init(ref expected, 42);
+			XorShiftAddCore.Init(out expected, 42);
 
 			var act = actual.GetCurrentState();
 
@@ -82,7 +82,7 @@ namespace XorShiftAddSharpTest
 
 			var policy = new XorShiftAddPoolObjectPolicy(42);
 			var expected=new InternalState();
-			XorShiftAddCore.Init(ref expected,42);
+			XorShiftAddCore.Init(out expected,42);
 
 
 			for (int i = 0; i < 32; i++)

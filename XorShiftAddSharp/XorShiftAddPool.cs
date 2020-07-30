@@ -17,7 +17,7 @@ namespace XorShiftAddSharp
 		private readonly XorShiftAdd?[] _items;
 		private readonly IXorShiftAddPoolObjectPolicy _policy;
 		private readonly XorShiftAddPoolObjectPolicy? _fastpolicy;
-		private bool _isDefaultPolicy;
+		private readonly bool _isDefaultPolicy;
 
 
 
@@ -28,8 +28,6 @@ namespace XorShiftAddSharp
 		public XorShiftAddPool(uint initialSeed, int maximumRetained) : this(
 			new XorShiftAddPoolObjectPolicy(initialSeed), maximumRetained)
 		{
-			if (maximumRetained <= 0)
-				throw new ArgumentException($"{nameof(maximumRetained)} needs to be greater than 0.");
 		}
 
 		public XorShiftAddPool(IReadOnlyList<uint> keys) : this(new XorShiftAddPoolObjectPolicy(keys),
@@ -40,8 +38,6 @@ namespace XorShiftAddSharp
 		public XorShiftAddPool(IReadOnlyList<uint> keys, int maximumRetained) : this(
 			new XorShiftAddPoolObjectPolicy(keys), maximumRetained)
 		{
-			if (maximumRetained <= 0)
-				throw new ArgumentException($"{nameof(maximumRetained)} needs to be greater than 0.");
 		}
 
 		public XorShiftAddPool(InternalState initialState, IReadOnlyList<InternalState> initialItems) : this(initialState,
@@ -54,7 +50,7 @@ namespace XorShiftAddSharp
 		{
 			if (maximumRetained <= 0)
 				throw new ArgumentException($"{nameof(maximumRetained)} needs to be greater than 0.");
-			if (initialItems.Count >= maximumRetained)
+			if (initialItems.Count > maximumRetained)
 				throw new ArgumentException($"{nameof(maximumRetained)} < {nameof(initialItems.Count)}");
 
 			_items = new XorShiftAdd[maximumRetained - 1];
@@ -127,7 +123,19 @@ namespace XorShiftAddSharp
 		public InternalState GetCurrentState() => _policy.GetCurrentState();
 
 
-		public IReadOnlyList<InternalState> GetCurrentItems() => _items.Select(x=>x.GetCurrentState()).ToArray();
+		public IReadOnlyList<InternalState> GetCurrentItems()
+		{
+			var ret=new List<InternalState>();
+
+			if(_firstItem !=null) ret.Add(_firstItem.GetCurrentState());
+
+			foreach (var elem in _items.Where(x=>x!=null).Select(x=>x!.GetCurrentState()))
+			{
+				ret.Add(elem);				
+			}
+
+			return ret;
+		}
 
 	}
 }

@@ -6,23 +6,3 @@
 
 #IncludeRegexTransform: 
 
-G:/XorShiftAddSharp/XsAddNative/xsadd.c
-xsadd.h
-G:/XorShiftAddSharp/XsAddNative/xsadd.h
-stdlib.h
--
-stdio.h
--
-inttypes.h
--
-errno.h
--
-string.h
--
-
-G:/XorShiftAddSharp/XsAddNative/xsadd.h
-stdint.h
--
-inttypes.h
--
-

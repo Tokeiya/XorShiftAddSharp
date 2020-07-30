@@ -68,7 +68,7 @@ namespace XorShiftAddSharpTest
 
             foreach (var elem in ScalarInit)
             {
-                XorShiftAddCore.Init(ref actual, elem.seed);
+                XorShiftAddCore.Init(out actual, elem.seed);
                 Assert(actual, elem.expectedSamples);
             }
         }
@@ -80,7 +80,7 @@ namespace XorShiftAddSharpTest
 
             foreach (var elem in ArrayInit)
             {
-                XorShiftAddCore.Init(ref actual, elem.input);
+                XorShiftAddCore.Init(out actual, elem.input);
                 Assert(actual, elem.expectedState);
             }
         }

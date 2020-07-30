@@ -21,7 +21,7 @@ namespace XorShiftAddSharp
         /// <param name="seed">A 32-bit unsigned integer used as a seed.</param>
         public XorShiftAdd(uint seed)
         {
-            XorShiftAddCore.Init(ref _state, seed);
+            XorShiftAddCore.Init(out _state, seed);
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace XorShiftAddSharp
         /// <param name="seeds">The array of 32-bit integers, used as a seed.</param>
         public XorShiftAdd(ReadOnlySpan<uint> seeds)
         {
-            XorShiftAddCore.Init(ref _state, seeds);
+            XorShiftAddCore.Init(out _state, seeds);
         }
 
         public InternalState GetCurrentState() => _state;
