@@ -41,3 +41,13 @@ Unfortunately this is a devastating changes from ver 0.1 .
 
 Fix: XorShiftAddCore and XorShiftAdd class Jump method's  baseStep parameter can now be prefixed with "0x" or "0X".
 (Previous Jump method could be accept prefix, but CalculateJumpPolynomial couldn't be accept prefix.)
+
+
+
+### ver 0.3.0.0
+
+Add [XorShiftAddPool](https://github.com/Tokeiya/XorShiftAddSharp/blob/master/XorShiftAddSharp/XorShiftAddPool.cs) [XorShiftAddPoolObjectPolicy ](https://github.com/Tokeiya/XorShiftAddSharp/blob/master/XorShiftAddSharp/XorShiftAddPoolObjectPolicy.cs)
+
+These are provides the object pool. 
+That are outputs are 2^64 range splitted instance.
+
