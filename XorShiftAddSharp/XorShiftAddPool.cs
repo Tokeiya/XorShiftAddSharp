@@ -9,7 +9,7 @@ namespace XorShiftAddSharp
 {
 	/// <summary>
 	/// A XorShiftAdd objects pool.
-	/// This one provides the 2^96 range splitted instance.(Thus the number of total available instance is 2^32)
+	/// This one provides the 2^64 range splitted instance.(Thus the number of total available instance is 2^64)
 	/// </summary>
 	public class XorShiftAddPool : ObjectPool<XorShiftAdd>
 	{
@@ -20,31 +20,60 @@ namespace XorShiftAddSharp
 		private readonly bool _isDefaultPolicy;
 
 
-
-		public XorShiftAddPool(uint initialSeed) : this(initialSeed, Environment.ProcessorCount * 2)
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="seed">Specify the initial seed.</param>
+		public XorShiftAddPool(uint seed) : this(seed, Environment.ProcessorCount * 2)
 		{
 		}
 
-		public XorShiftAddPool(uint initialSeed, int maximumRetained) : this(
-			new XorShiftAddPoolObjectPolicy(initialSeed), maximumRetained)
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="seed">Specify the initial seed.</param>
+		/// <param name="maximumRetained">The maximum number of objects to retain in the pool.</param>
+		public XorShiftAddPool(uint seed, int maximumRetained) : this(
+			new XorShiftAddPoolObjectPolicy(seed), maximumRetained)
 		{
 		}
 
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="keys">Specify the initial keys.</param>
 		public XorShiftAddPool(IReadOnlyList<uint> keys) : this(new XorShiftAddPoolObjectPolicy(keys),
 			Environment.ProcessorCount * 2)
 		{
 		}
 
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="keys">Specify the initial keys.</param>
+		/// <param name="maximumRetained">The maximum number of objects to retain in the pool.</param>
 		public XorShiftAddPool(IReadOnlyList<uint> keys, int maximumRetained) : this(
 			new XorShiftAddPoolObjectPolicy(keys), maximumRetained)
 		{
 		}
 
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="initialState">Specify the initial state.</param>
+		/// <param name="initialItems">Specify the initial items that stored.</param>
 		public XorShiftAddPool(InternalState initialState, IReadOnlyList<InternalState> initialItems) : this(initialState,
 			initialItems, Environment.ProcessorCount * 2)
 		{
 		}
 
+
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="initialState">Specify the initial state.</param>
+		/// <param name="initialItems">Specify the initial items that stored.</param>
+		/// <param name="maximumRetained">The maximum number of objects to retain in the pool.</param>
 		public XorShiftAddPool(InternalState initialState, IReadOnlyList<InternalState> initialItems,
 			int maximumRetained) : this(new XorShiftAddPoolObjectPolicy(initialState), maximumRetained)
 		{
@@ -62,10 +91,20 @@ namespace XorShiftAddSharp
 			}
 		}
 
+
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="policy">Specify the policy that using.</param>
 		public XorShiftAddPool(IXorShiftAddPoolObjectPolicy policy) : this(policy, Environment.ProcessorCount * 2)
 		{
 		}
 
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="policy">Specify the policy that using.</param>
+		/// <param name="maximumRetained">The maximum number of objects to retain in the pool.</param>
 		public XorShiftAddPool(IXorShiftAddPoolObjectPolicy policy, int maximumRetained)
 		{
 			if (maximumRetained <= 0)
@@ -78,6 +117,11 @@ namespace XorShiftAddSharp
 			_isDefaultPolicy = policy is XorShiftAddPoolObjectPolicy;
 		}
 
+
+		/// <summary>
+		/// Get the XorShiftAdd instance that jumped to 2^64 steps from previous created instance.
+		/// </summary>
+		/// <returns>XorShiftAdd instance that jumped to 2^64 steps from previous created instance.</returns>
 		public override XorShiftAdd Get()
 		{
 			var val = _firstItem;
@@ -104,6 +148,11 @@ namespace XorShiftAddSharp
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		private XorShiftAdd Create() => _fastpolicy?.Create() ?? _policy.Create();
 
+
+		/// <summary>
+		/// Return the instance.
+		/// </summary>
+		/// <param name="obj">Specify the instance that return.</param>
 		public override void Return(XorShiftAdd obj)
 		{
 			if (_isDefaultPolicy || (_fastpolicy?.Return(obj) ?? _policy.Return(obj)))
@@ -120,9 +169,18 @@ namespace XorShiftAddSharp
 			}
 		}
 
+
+		/// <summary>
+		/// Get the current InternalState.
+		/// </summary>
+		/// <returns>Current InternalState.</returns>
 		public InternalState GetCurrentState() => _policy.GetCurrentState();
 
 
+		/// <summary>
+		/// Get the current stored XorShiftAdd instance's InternalState.
+		/// </summary>
+		/// <returns>Current stored XorShiftAdd instance's InternalState.</returns>
 		public IReadOnlyList<InternalState> GetCurrentItems()
 		{
 			var ret=new List<InternalState>();

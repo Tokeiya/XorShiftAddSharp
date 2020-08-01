@@ -15,6 +15,7 @@ namespace XorShiftAddSharpTest
 		public DefaultXorShiftAddPoolTest(ITestOutputHelper output) => _output = output;
 
 		private static readonly int DefaultMaximumRetained = Environment.ProcessorCount * 2;
+		private const string JumpStr = "ad97ad554a3f3aa87bacae76fe10e86d";
 
 		static void AreEqual(InternalState actual, InternalState expected)
 		{
@@ -151,13 +152,19 @@ namespace XorShiftAddSharpTest
 		[Fact]
 		public void GetTest()
 		{
-			InternalState expected;
-			XorShiftAddCore.Init(out expected, 42);
-
-			var actual=new XorShiftAddPool(42);
 
 
+			XorShiftAddCore.Init(out var expected, 42);
 
+			var pool = new XorShiftAddPool(42);
+
+			for (int i = 0; i < 100; i++)
+			{
+				var actual = pool.Get();
+				InternalStateEqualityCompare.Default.Equals(actual.GetCurrentState(), expected).IsTrue();
+
+				XorShiftAddCore.Jump(ref expected,JumpStr);
+			}
 		}
 
 

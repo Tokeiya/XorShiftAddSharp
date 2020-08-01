@@ -5,14 +5,14 @@ using System.Linq;
 namespace XorShiftAddSharp
 {
 	/// <summary>
-	/// Create range 2^96 XorShiftAdd instance.
+	/// Create range 2^64 XorShiftAdd instance.
 	/// </summary>
 	public sealed class XorShiftAddPoolObjectPolicy : PooledObjectPolicy<XorShiftAdd>,IXorShiftAddPoolObjectPolicy
 	{
 		/// <summary>
 		/// Polynomial string of 2^96 jumping.
 		/// </summary>
-		private const string JumpStr = "5d9ae8e063f5deee4fd1583cf8f7f9d5";
+		private const string JumpStr = "ad97ad554a3f3aa87bacae76fe10e86d";
 
 		private InternalState _state;
 
