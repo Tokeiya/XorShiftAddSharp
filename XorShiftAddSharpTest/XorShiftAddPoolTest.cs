@@ -1,7 +1,7 @@
-using ChainingAssertion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ChainingAssertion;
 using XorShiftAddSharp;
 using Xunit;
 using Xunit.Abstractions;
@@ -10,35 +10,32 @@ namespace XorShiftAddSharpTest
 {
 	public class DefaultXorShiftAddPoolTest
 	{
+		public DefaultXorShiftAddPoolTest(ITestOutputHelper output)
+		{
+			_output = output;
+		}
 
 		private readonly ITestOutputHelper _output;
-		public DefaultXorShiftAddPoolTest(ITestOutputHelper output) => _output = output;
 
 		private static readonly int DefaultMaximumRetained = Environment.ProcessorCount * 2;
 		private const string JumpStr = "ad97ad554a3f3aa87bacae76fe10e86d";
 
-		static void AreEqual(InternalState actual, InternalState expected)
+		private static void AreEqual(InternalState actual, InternalState expected)
 		{
-			for (int i = 0; i < InternalState.Size; i++)
-			{
-				actual[i].Is(expected[i]);
-			}
+			for (int i = 0; i < InternalState.Size; i++) actual[i].Is(expected[i]);
 		}
 
-		static bool Equal(InternalState x, InternalState y)
+		private static bool Equal(InternalState x, InternalState y)
 		{
 			var ret = true;
-			for (int i = 0; i < InternalState.Size; i++)
-			{
-				ret &= (x[i] == y[i]);
-			}
+			for (int i = 0; i < InternalState.Size; i++) ret &= x[i] == y[i];
 
 			return ret;
 		}
 
-		static void Verify(XorShiftAddPool actual,in InternalState expectedInternalState,int maximumRetained)
+		private static void Verify(XorShiftAddPool actual, in InternalState expectedInternalState, int maximumRetained)
 		{
-			InternalStateEqualityCompare.Default.Equals(actual.GetCurrentState(),expectedInternalState).IsTrue();
+			InternalStateEqualityCompare.Default.Equals(actual.GetCurrentState(), expectedInternalState).IsTrue();
 
 			var first = new HashSet<XorShiftAdd>();
 
@@ -48,10 +45,7 @@ namespace XorShiftAddSharpTest
 				first.Add(tmp);
 			}
 
-			foreach (var elem in first)
-			{
-				actual.Return(elem);
-			}
+			foreach (var elem in first) actual.Return(elem);
 
 			var second = new List<XorShiftAdd>();
 
@@ -62,69 +56,39 @@ namespace XorShiftAddSharpTest
 				second.Add(tmp);
 			}
 
-			foreach (var elem in second)
-			{
-				actual.Return(elem);
-			}
+			foreach (var elem in second) actual.Return(elem);
 
 			var current = actual.GetCurrentItems();
 			current.Count.Is(maximumRetained);
 
-			foreach (var elem in current)
-			{
-				first.Any(x => Equal(x.GetCurrentState(), elem));
-			}
-
+			foreach (var elem in current) first.Any(x => Equal(x.GetCurrentState(), elem));
 		}
 
-		static void Verify(XorShiftAddPool actual, in InternalState expectedInternalState
-			,int maximumRetained, IReadOnlyList<InternalState> expected)
+		private static void Verify(XorShiftAddPool actual, in InternalState expectedInternalState
+			, int maximumRetained, IReadOnlyList<InternalState> expected)
 		{
-			
-			var first=actual.GetCurrentItems()
-				.Zip(expected, (act, exp) => (Equal(act, exp))).ToArray();
+			var first = actual.GetCurrentItems()
+				.Zip(expected, (act, exp) => Equal(act, exp)).ToArray();
 
-				first.All(x => x).IsTrue();
+			first.All(x => x).IsTrue();
 
-				Verify(actual,expectedInternalState, maximumRetained);
+			Verify(actual, expectedInternalState, maximumRetained);
 		}
 
 		[Fact]
-		public void SimpleInitTest()
+		public void GetTest()
 		{
-			InternalState expected=new InternalState();
+			XorShiftAddCore.Init(out var expected, 42);
 
-			XorShiftAddCore.Init(out expected, 42);
-			var actual = new XorShiftAddPool(42);
-			Verify(actual,expected,Environment.ProcessorCount * 2);
+			var pool = new XorShiftAddPool(42);
 
+			for (int i = 0; i < 100; i++)
+			{
+				var actual = pool.Get();
+				InternalStateEqualityCompare.Default.Equals(actual.GetCurrentState(), expected).IsTrue();
 
-			actual = new XorShiftAddPool(42, 32);
-			Verify(actual,expected, 32);
-			
-			Assert.Throws<ArgumentException>(() => new XorShiftAddPool(42, 0));
-			Assert.Throws<ArgumentException>(() => new XorShiftAddPool(42, -1));
-			Assert.Throws<ArgumentException>(() => new XorShiftAddPool(new XorShiftAddPoolObjectPolicy(42), 0));
-			Assert.Throws<ArgumentException>(() => new XorShiftAddPool(new XorShiftAddPoolObjectPolicy(42), -1));
-
-			actual = new XorShiftAddPool(42, 1);
-			Verify(actual,expected, 1);
-
-			XorShiftAddCore.Init(out expected,new uint[]{42,810,114514});
-			actual = new XorShiftAddPool(new uint[] { 42, 810, 114514 });
-			Verify(actual,expected, DefaultMaximumRetained);
-
-
-			actual = new XorShiftAddPool(new uint[] { 42,810, 114514 }, 32);
-			Verify(actual,expected, 32);
-
-			XorShiftAddCore.Init(out expected,42);
-			actual = new XorShiftAddPool(new XorShiftAddPoolObjectPolicy(42));
-			Verify(actual,expected, DefaultMaximumRetained);
-
-			actual = new XorShiftAddPool(new XorShiftAddPoolObjectPolicy(42), 32);
-			Verify(actual,expected, 32);
-
+				XorShiftAddCore.Jump(ref expected, JumpStr);
+			}
 		}
 
 		[Fact]
@@ -135,7 +99,7 @@ namespace XorShiftAddSharpTest
 				.Select(i => new InternalState {[0] = (uint) i}).ToArray();
 
 			var actual = new XorShiftAddPool(initialState, internalStates);
-			Verify(actual,initialState,DefaultMaximumRetained,internalStates);
+			Verify(actual, initialState, DefaultMaximumRetained, internalStates);
 
 			Assert.Throws<ArgumentException>(() =>
 				new XorShiftAddPool(initialState, internalStates, DefaultMaximumRetained - 1));
@@ -144,30 +108,44 @@ namespace XorShiftAddSharpTest
 				new XorShiftAddPool(initialState, internalStates, 0));
 
 			Assert.Throws<ArgumentException>(() =>
-				new XorShiftAddPool(initialState, internalStates,  - 1));
-
-
+				new XorShiftAddPool(initialState, internalStates, -1));
 		}
 
 		[Fact]
-		public void GetTest()
+		public void SimpleInitTest()
 		{
+			InternalState expected = new InternalState();
+
+			XorShiftAddCore.Init(out expected, 42);
+			var actual = new XorShiftAddPool(42);
+			Verify(actual, expected, Environment.ProcessorCount * 2);
 
 
-			XorShiftAddCore.Init(out var expected, 42);
+			actual = new XorShiftAddPool(42, 32);
+			Verify(actual, expected, 32);
 
-			var pool = new XorShiftAddPool(42);
+			Assert.Throws<ArgumentException>(() => new XorShiftAddPool(42, 0));
+			Assert.Throws<ArgumentException>(() => new XorShiftAddPool(42, -1));
+			Assert.Throws<ArgumentException>(() => new XorShiftAddPool(new XorShiftAddPoolObjectPolicy(42), 0));
+			Assert.Throws<ArgumentException>(() => new XorShiftAddPool(new XorShiftAddPoolObjectPolicy(42), -1));
 
-			for (int i = 0; i < 100; i++)
-			{
-				var actual = pool.Get();
-				InternalStateEqualityCompare.Default.Equals(actual.GetCurrentState(), expected).IsTrue();
+			actual = new XorShiftAddPool(42, 1);
+			Verify(actual, expected, 1);
 
-				XorShiftAddCore.Jump(ref expected,JumpStr);
-			}
+			XorShiftAddCore.Init(out expected, new uint[] {42, 810, 114514});
+			actual = new XorShiftAddPool(new uint[] {42, 810, 114514});
+			Verify(actual, expected, DefaultMaximumRetained);
+
+
+			actual = new XorShiftAddPool(new uint[] {42, 810, 114514}, 32);
+			Verify(actual, expected, 32);
+
+			XorShiftAddCore.Init(out expected, 42);
+			actual = new XorShiftAddPool(new XorShiftAddPoolObjectPolicy(42));
+			Verify(actual, expected, DefaultMaximumRetained);
+
+			actual = new XorShiftAddPool(new XorShiftAddPoolObjectPolicy(42), 32);
+			Verify(actual, expected, 32);
 		}
-
-
-
 	}
 }

@@ -33,8 +33,4 @@
     <ProjectReference Include="..\XorShiftAddSharp\XorShiftAddSharp.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ExpectedSamples\" />
-  </ItemGroup>
-
 </Project>

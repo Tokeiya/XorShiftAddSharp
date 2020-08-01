@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.CompilerServices;
 using ChainingAssertion;
 using XorShiftAddSharp;
 using Xunit;
@@ -9,46 +7,63 @@ namespace XorShiftAddSharpTest
 {
 	public class XorShiftAddPoolObjectPolicyTest
 	{
+		public XorShiftAddPoolObjectPolicyTest(ITestOutputHelper output)
+		{
+			_output = output;
+		}
+
 		private readonly ITestOutputHelper _output;
-		public XorShiftAddPoolObjectPolicyTest(ITestOutputHelper output) => _output = output;
 
-		static void Assert(XorShiftAddPoolObjectPolicy actual, in InternalState expected)
+		private static void Assert(XorShiftAddPoolObjectPolicy actual, in InternalState expected)
 		{
 			var state = actual.GetCurrentState();
 
-			for (int i = 0; i < InternalState.Size; i++)
-			{
-				state[i].Is(expected[i]);
-			}
+			for (int i = 0; i < InternalState.Size; i++) state[i].Is(expected[i]);
 		}
 
-		static void Assert(XorShiftAdd actual, in InternalState expected)
+		private static void Assert(XorShiftAdd actual, in InternalState expected)
 		{
 			var state = actual.GetCurrentState();
 
-			for (int i = 0; i < InternalState.Size; i++)
+			for (int i = 0; i < InternalState.Size; i++) state[i].Is(expected[i]);
+		}
+
+
+		[Fact]
+		public void CreateTest()
+		{
+			const string jump = "0x1000000000000000000000000";
+
+			var policy = new XorShiftAddPoolObjectPolicy(42);
+			var expected = new InternalState();
+			XorShiftAddCore.Init(out expected, 42);
+
+
+			for (int i = 0; i < 32; i++)
 			{
-				state[i].Is(expected[i]);
+				var actual = policy.Create();
+				Assert(actual, expected);
+				XorShiftAddCore.Jump(ref expected, 1, jump);
 			}
 		}
 
-	[Fact]
+		[Fact]
 		public void CtorTest()
 		{
-			var actual=new XorShiftAddPoolObjectPolicy(42);
+			var actual = new XorShiftAddPoolObjectPolicy(42);
 
-			InternalState expected=new InternalState();
-			XorShiftAddCore.Init(out expected,42);
+			InternalState expected = new InternalState();
+			XorShiftAddCore.Init(out expected, 42);
 			Assert(actual, expected);
 
 			var keys = new uint[] {42, 114514, 810};
 			actual = new XorShiftAddPoolObjectPolicy(keys);
 			XorShiftAddCore.Init(out expected, keys);
-			Assert(actual,expected);
+			Assert(actual, expected);
 
 			XorShiftAddCore.Init(out expected, 114514);
-			actual=new XorShiftAddPoolObjectPolicy(expected);
-			Assert(actual,expected);
+			actual = new XorShiftAddPoolObjectPolicy(expected);
+			Assert(actual, expected);
 		}
 
 		[Fact]
@@ -61,36 +76,11 @@ namespace XorShiftAddSharpTest
 
 			var act = actual.GetCurrentState();
 
-			for (int i = 0; i < InternalState.Size; i++)
-			{
-				act[i].Is(expected[i]);
-			}
+			for (int i = 0; i < InternalState.Size; i++) act[i].Is(expected[i]);
 
-			var tmp=actual.Create();
+			var tmp = actual.Create();
 			var next = actual.GetCurrentState();
-			for (int i = 0; i < InternalState.Size; i++)
-			{
-				act[i].IsNot(next[i]);
-			}
-		}
-
-
-		[Fact]
-		public void CreateTest()
-		{
-			const string jump = "0x1000000000000000000000000";
-
-			var policy = new XorShiftAddPoolObjectPolicy(42);
-			var expected=new InternalState();
-			XorShiftAddCore.Init(out expected,42);
-
-
-			for (int i = 0; i < 32; i++)
-			{
-				var actual = policy.Create(); 
-				Assert(actual, expected);
-				XorShiftAddCore.Jump(ref expected,1, jump);
-			}
+			for (int i = 0; i < InternalState.Size; i++) act[i].IsNot(next[i]);
 		}
 
 		[Fact]
