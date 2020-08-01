@@ -10,7 +10,7 @@ namespace XorShiftAddSharp
 	public sealed class XorShiftAddPoolObjectPolicy : PooledObjectPolicy<XorShiftAdd>,IXorShiftAddPoolObjectPolicy
 	{
 		/// <summary>
-		/// Polynomial string of 2^96 jumping.
+		/// Polynomial string of 2^64 jumping.
 		/// </summary>
 		private const string JumpStr = "ad97ad554a3f3aa87bacae76fe10e86d";
 
