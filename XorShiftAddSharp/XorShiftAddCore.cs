@@ -41,18 +41,35 @@ namespace XorShiftAddSharp
 			xsadd.State[3] = t;
 		}
 
+
+		/// <summary>
+		/// This method output 32-bit unsigned integer from internal state.
+		/// </summary>
+		/// <param name="xsadd">Specify the internal state.</param>
+		/// <returns>32-bit unsigned integer [0..2^32)</returns>
 		public static uint NextUint32(ref InternalState xsadd)
 		{
 			NextState(ref xsadd);
 			return xsadd.State[3] + xsadd.State[2];
 		}
 
+		/// <summary>
+		/// This method output floating point number from internal state.
+		/// This function is implemented using multiplying by 1 / 2^23.
+		/// </summary>
+		/// <param name="xsadd">Specify the internal state.</param>
+		/// <returns>floating point number r (0.0 &lt;= r &lt; 1.0)</returns>
 		public static float NextFloat(ref InternalState xsadd)
 		{
 			return (NextUint32(ref xsadd) >> 8) * XsaddFloatMul;
 		}
 
-
+		/// <summary>
+		/// This method outputs floating point number from internal state.
+		/// This method may return 1.0 and never returns 0.0.
+		/// </summary>
+		/// <param name="xsadd">Specify the internal state.</param>
+		/// <returns>floating point number r (0.0 &lt; r &lt;= 1.0)</returns>
 		// ReSharper disable once InconsistentNaming
 		public static float XsAddFloatOC(ref InternalState xsadd)
 		{
@@ -60,6 +77,12 @@ namespace XorShiftAddSharp
 			return 1.0f - NextFloat(ref xsadd);
 		}
 
+
+		/// <summary>
+		/// This function outputs double precision floating point number from internal state.
+		/// </summary>
+		/// <param name="xsadd">Specify the internal staet.</param>
+		/// <returns>floating point number r (0.0 &lt; r &lt;= 1.0)</returns>
 		public static double NextDouble(ref InternalState xsadd)
 		{
 			ulong a = NextUint32(ref xsadd);
@@ -68,6 +91,11 @@ namespace XorShiftAddSharp
 			return a * XsaddDoubleMul;
 		}
 
+		/// <summary>
+		/// This method initializes the internal state array with a 32-bit unsigned integer seed.
+		/// </summary>
+		/// <param name="xsadd">Specify the internal state that initialize.</param>
+		/// <param name="seed">specify the initialized seed.</param>
 		public static void Init(out InternalState xsadd, uint seed)
 		{
 			xsadd.State[0] = seed;
@@ -84,6 +112,11 @@ namespace XorShiftAddSharp
 			for (int i = 0; i < Loop; i++) NextState(ref xsadd);
 		}
 
+		/// <summary>
+		/// This method initializes the internal state array, with an array of 32-bit unsigned integers used as seeds.
+		/// </summary>
+		/// <param name="xsadd">Specify the internal state that initialize.</param>
+		/// <param name="initKey">Specify the seeds.</param>
 		public static void Init(out InternalState xsadd, ReadOnlySpan<uint> initKey)
 		{
 			const int lag = 1;
@@ -148,6 +181,14 @@ namespace XorShiftAddSharp
 			for (i = 0; i < Loop; i++) NextState(ref xsadd);
 		}
 
+
+		/// <summary>
+		/// This method jump the specified internal state.
+		/// </summary>
+		/// <param name="xsadd">Specify the internal state that jumped.</param>
+		/// <param name="mulStep">jump step is mul_step * base_step.</param>
+		/// <param name="baseStep">hexadecimal number string less than 2^128.</param>
+		/// <remarks>This method isn't throw any exceptions.</remarks>
 		public static void Jump(ref InternalState xsadd, uint mulStep, string baseStep)
 		{
 			Span<char> jumpStr = stackalloc char[33];
@@ -155,6 +196,14 @@ namespace XorShiftAddSharp
 			Jump(ref xsadd, jumpStr);
 		}
 
+
+		/// <summary>
+		/// ump using the jump polynomial.
+		/// This function is not as time consuming as calculating jump polynomial.This function can use multiple times for the xsadd structure.
+		/// </summary>
+		/// <param name="xsadd">Specify the internal state that jumped.</param>
+		/// <param name="jumpStr">Specify the jump polynomial calculated by CalculateJumpPolynomial</param>
+		/// <remarks>This method isn't throw any exceptions.</remarks>
 		public static void Jump(ref InternalState xsadd, ReadOnlySpan<char> jumpStr)
 		{
 			static bool chk(ReadOnlySpan<char> value)
@@ -194,7 +243,13 @@ namespace XorShiftAddSharp
 			for (var i = 0; i < InternalState.Size; ++i) xsadd.State[i] = work.State[i];
 		}
 
-
+		/// <summary>
+		/// calculate jump polynomial.
+		/// This function is time consuming.jump_str needs 33 bytes memory.
+		/// </summary>
+		/// <param name="jumpStr">the result of this calculation.</param>
+		/// <param name="mulStep">jump step is mul_step * base_step.</param>
+		/// <param name="baseStep">hexadecimal number string less than 2^128.</param>
 		//char[] jump_star is must.
 		public static void CalculateJumpPolynomial(Span<char> jumpStr,
 			uint mulStep, string baseStep)

@@ -32,7 +32,8 @@ namespace XorShiftAddSharpTest
 		[Fact]
 		public void CreateTest()
 		{
-			const string jump = "0x1000000000000000000000000";
+			const string jump = "0x10000000000000000";
+			                     
 
 			var policy = new XorShiftAddPoolObjectPolicy(42);
 			var expected = new InternalState();
