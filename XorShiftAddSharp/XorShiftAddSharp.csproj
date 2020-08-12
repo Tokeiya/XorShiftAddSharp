@@ -5,7 +5,7 @@
 	  <Nullable>enable</Nullable>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-	  <Version>0.3.0.0</Version>
+	  <Version>1.0.0.0</Version>
 	  <Authors>Tokeiya3</Authors>
 	  <Description>This is a pure C# implementation of a XORSHIFT-ADD (XSadd) pseudo-random number generator.</Description>
 	  <Copyright>tokeiya3</Copyright>
