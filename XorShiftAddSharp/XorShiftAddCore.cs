@@ -5,8 +5,7 @@ using System.Runtime.CompilerServices;
 namespace XorShiftAddSharp
 {
 	/// <summary>
-	///     Naive implementation of XORSHIFT-ADD
-	///     See the original doxygen for details.
+	/// Naive implementation of XORSHIFT-ADD
 	/// </summary>
 	public static unsafe class XorShiftAddCore
 	{

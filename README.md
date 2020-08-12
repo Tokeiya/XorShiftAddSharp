@@ -51,3 +51,10 @@ Add [XorShiftAddPool](https://github.com/Tokeiya/XorShiftAddSharp/blob/master/Xo
 These are provides the object pool. 
 That are outputs are 2^64 range splitted instance.
 
+
+
+### Ver1.0.0.0
+
+Add xml comment to [**XorShiftAddCore.cs**](https://github.com/Tokeiya/XorShiftAddSharp/blob/master/XorShiftAddSharp/XorShiftAddCore.cs)
+
+Fixed incorrect test fixture.
