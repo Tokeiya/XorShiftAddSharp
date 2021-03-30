@@ -31,7 +31,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include <xsadd.h>
+#include "xsadd.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
@@ -237,6 +237,8 @@ void xsadd_calculate_jump_polynomial(char *jump_str,
     uz mul;
     uz step;
 
+    for(int i=0;i<POLYNOMIAL_ARRAY_SIZE;++i) charcteristic.ar[i]=0;
+
     strtopolynomial(&charcteristic, characteristic_polynomial);
     clear(&tee);
     tee.ar[0] = 2;
@@ -263,8 +265,7 @@ static void xsadd_add(xsadd_t *dest, const xsadd_t *src)
     dest->state[3] ^= src->state[3];
 }
 
-static void period_certification(xsadd_t * xsadd)
-{
+static void period_certification(xsadd_t * xsadd) {
     if (xsadd->state[0] == 0 &&
         xsadd->state[1] == 0 &&
         xsadd->state[2] == 0 &&
@@ -524,8 +525,7 @@ static void mod(f2_polynomial *dest, const f2_polynomial *x)
  * @param poly 128-bit polynomial
  * @param str hexadecimal string of 128-bit polynomial.
  */
-static void strtopolynomial(f2_polynomial * poly, const char * str)
-{
+static void strtopolynomial(f2_polynomial * poly, const char * str) {
     char buffer[POLYNOMIAL_ARRAY_SIZE * 8 + 1];
     strncpy(buffer, str, POLYNOMIAL_ARRAY_SIZE * 8);
     buffer[POLYNOMIAL_ARRAY_SIZE * 8] = 0;
@@ -534,24 +534,26 @@ static void strtopolynomial(f2_polynomial * poly, const char * str)
     int pos = len - 8;
     int i;
     for (i = 0; pos >= 0 && i < POLYNOMIAL_ARRAY_SIZE; i++) {
-	poly->ar[i] = strtoul(buffer + pos, NULL, 16);
-	if (errno) {
-	    /* throw exception */
-	    perror(__FILE__);
-	}
-	buffer[pos] = 0;
-	pos -= 8;
+        poly->ar[i] = strtoul(buffer + pos, NULL, 16);
+        if (errno) {
+            /* throw exception */
+            printf("occur error");
+            perror(__FILE__);
+        }
+        buffer[pos] = 0;
+        pos -= 8;
     }
     if (pos + 8 > 0) {
-	poly->ar[i] = strtoul(buffer, NULL, 16);
-	i++;
-	if (errno) {
-	    /* throw exception */
-	    perror(__FILE__);
-	}
+        poly->ar[i] = strtoul(buffer, NULL, 16);
+        i++;
+        if (errno) {
+            /* throw exception */
+            printf("occur error");
+            perror(__FILE__);
+        }
     }
     for (; i < POLYNOMIAL_ARRAY_SIZE; i++) {
-	poly->ar[i] = 0;
+        poly->ar[i] = 0;
     }
 }
 
@@ -664,21 +666,24 @@ static void string16touz(uz * result, const char * str)
     int len = strlen(s);
     uz_clear(result);
     for (int i = 0; i < UZ_ARRAY_SIZE; i++) {
-	len = len - 4;
-	if (len < 0) {
-	    len = 0;
-	}
-	uint16_t tmp = (uint16_t)strtoul(s + len, NULL, 16);
-	if (errno) {
-	    perror("string16touz");
-	    exit(1);
-	}
-	result->ar[i] = tmp;
-	if (len == 0) {
-	    break;
-	}
-	s[len] = '\0';
+        len = len - 4;
+        if (len < 0) {
+            len = 0;
+        }
+        uint16_t tmp = (uint16_t) strtoul(s + len, NULL, 16);
+        if (errno) {
+            printf("occur error");
+            perror("string16touz");
+            exit(1);
+        }
+        result->ar[i] = tmp;
+        if (len == 0) {
+            break;
+        }
+        s[len] = '\0';
     }
+
+    printf("");
 }
 
 #if 0
