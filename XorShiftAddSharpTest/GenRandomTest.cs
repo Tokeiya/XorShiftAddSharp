@@ -309,7 +309,7 @@ namespace XorShiftAddSharpTest
 
 				XorShiftAddCore.Init(out state, seed);
 
-				foreach (var elem in expected) XorShiftAddCore.XsAddFloatOC(ref state).Is(elem);
+				foreach (var elem in expected) XorShiftAddCore.NextFloatOC(ref state).Is(elem);
 			}
 
 			foreach (var elem in Float0Samples) assert(elem.seed, elem.expected);

@@ -70,7 +70,7 @@ namespace XorShiftAddSharp
 		/// <param name="xsadd">Specify the internal state.</param>
 		/// <returns>floating point number r (0.0 &lt; r &lt;= 1.0)</returns>
 		// ReSharper disable once InconsistentNaming
-		public static float XsAddFloatOC(ref InternalState xsadd)
+		public static float NextFloatOC(ref InternalState xsadd)
 		{
 			NextState(ref xsadd);
 			return 1.0f - NextFloat(ref xsadd);
